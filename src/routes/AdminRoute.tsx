@@ -1,23 +1,17 @@
-import { Navigate } from "react-router";
-import { ReactNode } from "react";
-import { useAuth } from "../context/AuthContext";
+// src/routes/AdminRoute.tsx
+import { Navigate, Outlet } from "react-router-dom";
+import { useAuth } from "../api/useAuth";
 
-interface Props {
-  children: ReactNode;
-}
-
-export default function AdminRoute({ children }: Props) {
+export default function AdminLayout() {
   const { user, loading } = useAuth();
 
-  if (loading) return null;
+  if (loading) return <p>Loading...</p>;
 
-  if (!user) {
-    return <Navigate to="/signin" replace />;
+  if (!user || user.role !== "ADMIN") {
+    return <Navigate to="/" replace />;
   }
 
-  if (user.role !== "ADMIN") {
-    return <Navigate to="/unauthorized" replace />;
-  }
-
-  return <>{children}</>;
+  return <Outlet />;
 }
+
+//this way signup wont be done by any user he can't even write /signup

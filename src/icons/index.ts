@@ -59,6 +59,13 @@ import { ReactComponent as Malign } from "./bug-malware-svgrepo-com.svg?react";
 import { ReactComponent as Colab } from "./googlecolab.svg?react";
 import { ReactComponent as Reacte } from "./react.svg?react";
 import { ReactComponent as File } from "./file.svg?react";
+import { ReactComponent as Client } from "./users-four.svg?react";
+import { ReactComponent as PlusClient } from "./user-circle-plus.svg?react";
+import { ReactComponent as Binoculars } from "./binoculars.svg?react";
+import { ReactComponent as ClientDetails } from "./address-book.svg?react";
+import { ReactComponent as CalendarPlus } from "./calendar-plus.svg?react";
+import { ReactComponent as FileArchive } from "./file-archive.svg?react";
+
 export {
   ErrorHexaIcon,
   AlertHexaIcon,
@@ -120,5 +127,11 @@ export {
   Malign,
   Colab,
   Reacte,
-  File
+  File,
+  Client,
+  PlusClient,
+  Binoculars,
+  ClientDetails,
+  CalendarPlus,
+  FileArchive
 };

@@ -1,0 +1,1740 @@
+{
+  "name": "ca-console-web",
+  "path": "c:\\asish\\React\\Daddy_Dashboard\\ca_Console_web\\ca-console-web",
+  "type": "directory",
+  "children": [
+    {
+      "name": "New folder",
+      "type": "folder",
+      "icon": "📁"
+    },
+    {
+      "name": "public",
+      "type": "folder",
+      "icon": "📁",
+      "children": [
+        {
+          "name": "Reports",
+          "type": "folder",
+          "icon": "📁",
+          "children": [
+            {
+              "name": "AndroBlight.pdf",
+              "type": "file",
+              "icon": "📕"
+            },
+            {
+              "name": "MalDroid End Sem PPT.pdf",
+              "type": "file",
+              "icon": "📕"
+            }
+          ]
+        },
+        {
+          "name": "images",
+          "type": "folder",
+          "icon": "📁",
+          "children": [
+            {
+              "name": "brand",
+              "type": "folder",
+              "icon": "📁",
+              "children": [
+                {
+                  "name": "brand-01.svg",
+                  "type": "file",
+                  "icon": "🖼️"
+                },
+                {
+                  "name": "brand-02.svg",
+                  "type": "file",
+                  "icon": "🖼️"
+                },
+                {
+                  "name": "brand-03.svg",
+                  "type": "file",
+                  "icon": "🖼️"
+                },
+                {
+                  "name": "brand-04.svg",
+                  "type": "file",
+                  "icon": "🖼️"
+                },
+                {
+                  "name": "brand-05.svg",
+                  "type": "file",
+                  "icon": "🖼️"
+                },
+                {
+                  "name": "brand-06.svg",
+                  "type": "file",
+                  "icon": "🖼️"
+                },
+                {
+                  "name": "brand-07.svg",
+                  "type": "file",
+                  "icon": "🖼️"
+                },
+                {
+                  "name": "brand-08.svg",
+                  "type": "file",
+                  "icon": "🖼️"
+                },
+                {
+                  "name": "brand-09.svg",
+                  "type": "file",
+                  "icon": "🖼️"
+                },
+                {
+                  "name": "brand-10.svg",
+                  "type": "file",
+                  "icon": "🖼️"
+                },
+                {
+                  "name": "brand-11.svg",
+                  "type": "file",
+                  "icon": "🖼️"
+                },
+                {
+                  "name": "brand-12.svg",
+                  "type": "file",
+                  "icon": "🖼️"
+                },
+                {
+                  "name": "brand-13.svg",
+                  "type": "file",
+                  "icon": "🖼️"
+                },
+                {
+                  "name": "brand-14.svg",
+                  "type": "file",
+                  "icon": "🖼️"
+                },
+                {
+                  "name": "brand-15.svg",
+                  "type": "file",
+                  "icon": "🖼️"
+                }
+              ]
+            },
+            {
+              "name": "cards",
+              "type": "folder",
+              "icon": "📁",
+              "children": [
+                {
+                  "name": "card-01.jpg",
+                  "type": "file",
+                  "icon": "🖼️"
+                },
+                {
+                  "name": "card-01.png",
+                  "type": "file",
+                  "icon": "🖼️"
+                },
+                {
+                  "name": "card-02.jpg",
+                  "type": "file",
+                  "icon": "🖼️"
+                },
+                {
+                  "name": "card-02.png",
+                  "type": "file",
+                  "icon": "🖼️"
+                },
+                {
+                  "name": "card-03.jpg",
+                  "type": "file",
+                  "icon": "🖼️"
+                },
+                {
+                  "name": "card-03.png",
+                  "type": "file",
+                  "icon": "🖼️"
+                }
+              ]
+            },
+            {
+              "name": "carousel",
+              "type": "folder",
+              "icon": "📁",
+              "children": [
+                {
+                  "name": "carousel-01.png",
+                  "type": "file",
+                  "icon": "🖼️"
+                },
+                {
+                  "name": "carousel-02.png",
+                  "type": "file",
+                  "icon": "🖼️"
+                },
+                {
+                  "name": "carousel-03.png",
+                  "type": "file",
+                  "icon": "🖼️"
+                },
+                {
+                  "name": "carousel-04.png",
+                  "type": "file",
+                  "icon": "🖼️"
+                }
+              ]
+            },
+            {
+              "name": "chat",
+              "type": "folder",
+              "icon": "📁",
+              "children": [
+                {
+                  "name": "chat.jpg",
+                  "type": "file",
+                  "icon": "🖼️"
+                }
+              ]
+            },
+            {
+              "name": "country",
+              "type": "folder",
+              "icon": "📁",
+              "children": [
+                {
+                  "name": "country-01.svg",
+                  "type": "file",
+                  "icon": "🖼️"
+                },
+                {
+                  "name": "country-02.svg",
+                  "type": "file",
+                  "icon": "🖼️"
+                },
+                {
+                  "name": "country-03.svg",
+                  "type": "file",
+                  "icon": "🖼️"
+                },
+                {
+                  "name": "country-04.svg",
+                  "type": "file",
+                  "icon": "🖼️"
+                },
+                {
+                  "name": "country-05.svg",
+                  "type": "file",
+                  "icon": "🖼️"
+                },
+                {
+                  "name": "country-06.svg",
+                  "type": "file",
+                  "icon": "🖼️"
+                },
+                {
+                  "name": "country-07.svg",
+                  "type": "file",
+                  "icon": "🖼️"
+                },
+                {
+                  "name": "country-08.svg",
+                  "type": "file",
+                  "icon": "🖼️"
+                }
+              ]
+            },
+            {
+              "name": "error",
+              "type": "folder",
+              "icon": "📁",
+              "children": [
+                {
+                  "name": "404-dark.svg",
+                  "type": "file",
+                  "icon": "🖼️"
+                },
+                {
+                  "name": "404.svg",
+                  "type": "file",
+                  "icon": "🖼️"
+                },
+                {
+                  "name": "500-dark.svg",
+                  "type": "file",
+                  "icon": "🖼️"
+                },
+                {
+                  "name": "500.svg",
+                  "type": "file",
+                  "icon": "🖼️"
+                },
+                {
+                  "name": "503-dark.svg",
+                  "type": "file",
+                  "icon": "🖼️"
+                },
+                {
+                  "name": "503.svg",
+                  "type": "file",
+                  "icon": "🖼️"
+                },
+                {
+                  "name": "maintenance-dark.svg",
+                  "type": "file",
+                  "icon": "🖼️"
+                },
+                {
+                  "name": "maintenance.svg",
+                  "type": "file",
+                  "icon": "🖼️"
+                },
+                {
+                  "name": "success-dark.svg",
+                  "type": "file",
+                  "icon": "🖼️"
+                },
+                {
+                  "name": "success.svg",
+                  "type": "file",
+                  "icon": "🖼️"
+                }
+              ]
+            },
+            {
+              "name": "grid-image",
+              "type": "folder",
+              "icon": "📁",
+              "children": [
+                {
+                  "name": "image-01.png",
+                  "type": "file",
+                  "icon": "🖼️"
+                },
+                {
+                  "name": "image-02.png",
+                  "type": "file",
+                  "icon": "🖼️"
+                },
+                {
+                  "name": "image-03.png",
+                  "type": "file",
+                  "icon": "🖼️"
+                },
+                {
+                  "name": "image-04.png",
+                  "type": "file",
+                  "icon": "🖼️"
+                },
+                {
+                  "name": "image-05.png",
+                  "type": "file",
+                  "icon": "🖼️"
+                },
+                {
+                  "name": "image-06.png",
+                  "type": "file",
+                  "icon": "🖼️"
+                }
+              ]
+            },
+            {
+              "name": "icons",
+              "type": "folder",
+              "icon": "📁",
+              "children": [
+                {
+                  "name": "file-image-dark.svg",
+                  "type": "file",
+                  "icon": "🖼️"
+                },
+                {
+                  "name": "file-image.svg",
+                  "type": "file",
+                  "icon": "🖼️"
+                },
+                {
+                  "name": "file-pdf-dark.svg",
+                  "type": "file",
+                  "icon": "🖼️"
+                },
+                {
+                  "name": "file-pdf.svg",
+                  "type": "file",
+                  "icon": "🖼️"
+                },
+                {
+                  "name": "file-video-dark.svg",
+                  "type": "file",
+                  "icon": "🖼️"
+                },
+                {
+                  "name": "file-video.svg",
+                  "type": "file",
+                  "icon": "🖼️"
+                }
+              ]
+            },
+            {
+              "name": "logo",
+              "type": "folder",
+              "icon": "📁",
+              "children": [
+                {
+                  "name": "231289914.png",
+                  "type": "file",
+                  "icon": "🖼️"
+                },
+                {
+                  "name": "auth-logo.svg",
+                  "type": "file",
+                  "icon": "🖼️"
+                },
+                {
+                  "name": "logo-dark.svg",
+                  "type": "file",
+                  "icon": "🖼️"
+                },
+                {
+                  "name": "logo-icon.svg",
+                  "type": "file",
+                  "icon": "🖼️"
+                },
+                {
+                  "name": "logo.svg",
+                  "type": "file",
+                  "icon": "🖼️"
+                }
+              ]
+            },
+            {
+              "name": "members",
+              "type": "folder",
+              "icon": "📁",
+              "children": [
+                {
+                  "name": "AdityaSarkar.jpg",
+                  "type": "file",
+                  "icon": "🖼️"
+                },
+                {
+                  "name": "AkashKumar.jpg",
+                  "type": "file",
+                  "icon": "🖼️"
+                },
+                {
+                  "name": "AshmitDutta.jpg",
+                  "type": "file",
+                  "icon": "🖼️"
+                },
+                {
+                  "name": "AsishKumar.jpg",
+                  "type": "file",
+                  "icon": "🖼️"
+                },
+                {
+                  "name": "WhatsApp Image 2025-11-05 at 19.04.54_7577fa99.jpg",
+                  "type": "file",
+                  "icon": "🖼️"
+                }
+              ]
+            },
+            {
+              "name": "shape",
+              "type": "folder",
+              "icon": "📁",
+              "children": [
+                {
+                  "name": "grid-01.svg",
+                  "type": "file",
+                  "icon": "🖼️"
+                }
+              ]
+            },
+            {
+              "name": "task",
+              "type": "folder",
+              "icon": "📁",
+              "children": [
+                {
+                  "name": "google-drive.svg",
+                  "type": "file",
+                  "icon": "🖼️"
+                },
+                {
+                  "name": "pdf.svg",
+                  "type": "file",
+                  "icon": "🖼️"
+                },
+                {
+                  "name": "task.jpg",
+                  "type": "file",
+                  "icon": "🖼️"
+                },
+                {
+                  "name": "task.png",
+                  "type": "file",
+                  "icon": "🖼️"
+                }
+              ]
+            },
+            {
+              "name": "video-thumb",
+              "type": "folder",
+              "icon": "📁",
+              "children": [
+                {
+                  "name": "thumb-16.png",
+                  "type": "file",
+                  "icon": "🖼️"
+                },
+                {
+                  "name": "youtube-icon-84.svg",
+                  "type": "file",
+                  "icon": "🖼️"
+                }
+              ]
+            },
+            {
+              "name": "favicon.ico",
+              "type": "file",
+              "icon": "📄"
+            }
+          ]
+        },
+        {
+          "name": "favicon.png",
+          "type": "file",
+          "icon": "🖼️"
+        }
+      ]
+    },
+    {
+      "name": "src",
+      "type": "folder",
+      "icon": "📁",
+      "children": [
+        {
+          "name": "components",
+          "type": "folder",
+          "icon": "📁",
+          "children": [
+            {
+              "name": "UserProfile",
+              "type": "folder",
+              "icon": "📁",
+              "children": [
+                {
+                  "name": "UserMetaCard.tsx",
+                  "type": "file",
+                  "icon": "⚛️"
+                },
+                {
+                  "name": "members.tsx",
+                  "type": "file",
+                  "icon": "⚛️"
+                }
+              ]
+            },
+            {
+              "name": "admin",
+              "type": "folder",
+              "icon": "📁",
+              "children": [
+                {
+                  "name": "CreateStaffForm.tsx",
+                  "type": "file",
+                  "icon": "⚛️"
+                }
+              ]
+            },
+            {
+              "name": "auth",
+              "type": "folder",
+              "icon": "📁",
+              "children": [
+                {
+                  "name": "SignInForm.tsx",
+                  "type": "file",
+                  "icon": "⚛️"
+                },
+                {
+                  "name": "SignUpForm.tsx",
+                  "type": "file",
+                  "icon": "⚛️"
+                }
+              ]
+            },
+            {
+              "name": "charts",
+              "type": "folder",
+              "icon": "📁",
+              "children": [
+                {
+                  "name": "bar",
+                  "type": "folder",
+                  "icon": "📁",
+                  "children": [
+                    {
+                      "name": "BarChartOne.tsx",
+                      "type": "file",
+                      "icon": "⚛️"
+                    }
+                  ]
+                },
+                {
+                  "name": "line",
+                  "type": "folder",
+                  "icon": "📁",
+                  "children": [
+                    {
+                      "name": "LineChartOne.tsx",
+                      "type": "file",
+                      "icon": "⚛️"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "common",
+              "type": "folder",
+              "icon": "📁",
+              "children": [
+                {
+                  "name": "ChartTab.tsx",
+                  "type": "file",
+                  "icon": "⚛️"
+                },
+                {
+                  "name": "ComponentCard.tsx",
+                  "type": "file",
+                  "icon": "⚛️"
+                },
+                {
+                  "name": "GridShape.tsx",
+                  "type": "file",
+                  "icon": "⚛️"
+                },
+                {
+                  "name": "PageBreadCrumb.tsx",
+                  "type": "file",
+                  "icon": "⚛️"
+                },
+                {
+                  "name": "PageMeta.tsx",
+                  "type": "file",
+                  "icon": "⚛️"
+                },
+                {
+                  "name": "ScrollToTop.tsx",
+                  "type": "file",
+                  "icon": "⚛️"
+                },
+                {
+                  "name": "ThemeToggleButton.tsx",
+                  "type": "file",
+                  "icon": "⚛️"
+                },
+                {
+                  "name": "ThemeTogglerTwo.tsx",
+                  "type": "file",
+                  "icon": "⚛️"
+                }
+              ]
+            },
+            {
+              "name": "ecommerce",
+              "type": "folder",
+              "icon": "📁",
+              "children": [
+                {
+                  "name": "ApkAnalyzer.tsx",
+                  "type": "file",
+                  "icon": "⚛️"
+                },
+                {
+                  "name": "ConfusionMatrices.tsx",
+                  "type": "file",
+                  "icon": "⚛️"
+                },
+                {
+                  "name": "CountryMap.tsx",
+                  "type": "file",
+                  "icon": "⚛️"
+                },
+                {
+                  "name": "DemographicCard.tsx",
+                  "type": "file",
+                  "icon": "⚛️"
+                },
+                {
+                  "name": "EcommerceMetrics.tsx",
+                  "type": "file",
+                  "icon": "⚛️"
+                },
+                {
+                  "name": "LossEpochsChart.tsx",
+                  "type": "file",
+                  "icon": "⚛️"
+                },
+                {
+                  "name": "ModelMetrics.tsx",
+                  "type": "file",
+                  "icon": "⚛️"
+                },
+                {
+                  "name": "MonthlySalesChart.tsx",
+                  "type": "file",
+                  "icon": "⚛️"
+                },
+                {
+                  "name": "MonthlyTarget.tsx",
+                  "type": "file",
+                  "icon": "⚛️"
+                },
+                {
+                  "name": "RecentOrders.tsx",
+                  "type": "file",
+                  "icon": "⚛️"
+                },
+                {
+                  "name": "StatisticsChart.tsx",
+                  "type": "file",
+                  "icon": "⚛️"
+                }
+              ]
+            },
+            {
+              "name": "form",
+              "type": "folder",
+              "icon": "📁",
+              "children": [
+                {
+                  "name": "form-elements",
+                  "type": "folder",
+                  "icon": "📁",
+                  "children": [
+                    {
+                      "name": "CheckboxComponents.tsx",
+                      "type": "file",
+                      "icon": "⚛️"
+                    },
+                    {
+                      "name": "DefaultInputs.tsx",
+                      "type": "file",
+                      "icon": "⚛️"
+                    },
+                    {
+                      "name": "DropZone.tsx",
+                      "type": "file",
+                      "icon": "⚛️"
+                    },
+                    {
+                      "name": "FileInputExample.tsx",
+                      "type": "file",
+                      "icon": "⚛️"
+                    },
+                    {
+                      "name": "InputGroup.tsx",
+                      "type": "file",
+                      "icon": "⚛️"
+                    },
+                    {
+                      "name": "InputStates.tsx",
+                      "type": "file",
+                      "icon": "⚛️"
+                    },
+                    {
+                      "name": "RadioButtons.tsx",
+                      "type": "file",
+                      "icon": "⚛️"
+                    },
+                    {
+                      "name": "SelectInputs.tsx",
+                      "type": "file",
+                      "icon": "⚛️"
+                    },
+                    {
+                      "name": "TextAreaInput.tsx",
+                      "type": "file",
+                      "icon": "⚛️"
+                    },
+                    {
+                      "name": "ToggleSwitch.tsx",
+                      "type": "file",
+                      "icon": "⚛️"
+                    }
+                  ]
+                },
+                {
+                  "name": "group-input",
+                  "type": "folder",
+                  "icon": "📁",
+                  "children": [
+                    {
+                      "name": "PhoneInput.tsx",
+                      "type": "file",
+                      "icon": "⚛️"
+                    }
+                  ]
+                },
+                {
+                  "name": "input",
+                  "type": "folder",
+                  "icon": "📁",
+                  "children": [
+                    {
+                      "name": "Checkbox.tsx",
+                      "type": "file",
+                      "icon": "⚛️"
+                    },
+                    {
+                      "name": "FileInput.tsx",
+                      "type": "file",
+                      "icon": "⚛️"
+                    },
+                    {
+                      "name": "InputField.tsx",
+                      "type": "file",
+                      "icon": "⚛️"
+                    },
+                    {
+                      "name": "Radio.tsx",
+                      "type": "file",
+                      "icon": "⚛️"
+                    },
+                    {
+                      "name": "RadioSm.tsx",
+                      "type": "file",
+                      "icon": "⚛️"
+                    },
+                    {
+                      "name": "TextArea.tsx",
+                      "type": "file",
+                      "icon": "⚛️"
+                    }
+                  ]
+                },
+                {
+                  "name": "switch",
+                  "type": "folder",
+                  "icon": "📁",
+                  "children": [
+                    {
+                      "name": "Switch.tsx",
+                      "type": "file",
+                      "icon": "⚛️"
+                    }
+                  ]
+                },
+                {
+                  "name": "Form.tsx",
+                  "type": "file",
+                  "icon": "⚛️"
+                },
+                {
+                  "name": "Label.tsx",
+                  "type": "file",
+                  "icon": "⚛️"
+                },
+                {
+                  "name": "MultiSelect.tsx",
+                  "type": "file",
+                  "icon": "⚛️"
+                },
+                {
+                  "name": "Select.tsx",
+                  "type": "file",
+                  "icon": "⚛️"
+                },
+                {
+                  "name": "date-picker.tsx",
+                  "type": "file",
+                  "icon": "⚛️"
+                }
+              ]
+            },
+            {
+              "name": "header",
+              "type": "folder",
+              "icon": "📁",
+              "children": [
+                {
+                  "name": "Header.tsx",
+                  "type": "file",
+                  "icon": "⚛️"
+                },
+                {
+                  "name": "NotificationDropdown.tsx",
+                  "type": "file",
+                  "icon": "⚛️"
+                },
+                {
+                  "name": "UserDropdown.tsx",
+                  "type": "file",
+                  "icon": "⚛️"
+                }
+              ]
+            },
+            {
+              "name": "otherspg",
+              "type": "folder",
+              "icon": "📁",
+              "children": [
+                {
+                  "name": "PhotoGallery.tsx",
+                  "type": "file",
+                  "icon": "⚛️"
+                },
+                {
+                  "name": "ReportViewer.tsx",
+                  "type": "file",
+                  "icon": "⚛️"
+                }
+              ]
+            },
+            {
+              "name": "tables",
+              "type": "folder",
+              "icon": "📁",
+              "children": [
+                {
+                  "name": "BasicTables",
+                  "type": "folder",
+                  "icon": "📁",
+                  "children": [
+                    {
+                      "name": "BasicTableOne.tsx",
+                      "type": "file",
+                      "icon": "⚛️"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "ui",
+              "type": "folder",
+              "icon": "📁",
+              "children": [
+                {
+                  "name": "alert",
+                  "type": "folder",
+                  "icon": "📁",
+                  "children": [
+                    {
+                      "name": "Alert.tsx",
+                      "type": "file",
+                      "icon": "⚛️"
+                    }
+                  ]
+                },
+                {
+                  "name": "avatar",
+                  "type": "folder",
+                  "icon": "📁",
+                  "children": [
+                    {
+                      "name": "Avatar.tsx",
+                      "type": "file",
+                      "icon": "⚛️"
+                    }
+                  ]
+                },
+                {
+                  "name": "badge",
+                  "type": "folder",
+                  "icon": "📁",
+                  "children": [
+                    {
+                      "name": "Badge.tsx",
+                      "type": "file",
+                      "icon": "⚛️"
+                    }
+                  ]
+                },
+                {
+                  "name": "button",
+                  "type": "folder",
+                  "icon": "📁",
+                  "children": [
+                    {
+                      "name": "Button.tsx",
+                      "type": "file",
+                      "icon": "⚛️"
+                    }
+                  ]
+                },
+                {
+                  "name": "dropdown",
+                  "type": "folder",
+                  "icon": "📁",
+                  "children": [
+                    {
+                      "name": "Dropdown.tsx",
+                      "type": "file",
+                      "icon": "⚛️"
+                    },
+                    {
+                      "name": "DropdownItem.tsx",
+                      "type": "file",
+                      "icon": "⚛️"
+                    }
+                  ]
+                },
+                {
+                  "name": "images",
+                  "type": "folder",
+                  "icon": "📁",
+                  "children": [
+                    {
+                      "name": "ResponsiveImage.tsx",
+                      "type": "file",
+                      "icon": "⚛️"
+                    },
+                    {
+                      "name": "ThreeColumnImageGrid.tsx",
+                      "type": "file",
+                      "icon": "⚛️"
+                    },
+                    {
+                      "name": "TwoColumnImageGrid.tsx",
+                      "type": "file",
+                      "icon": "⚛️"
+                    }
+                  ]
+                },
+                {
+                  "name": "modal",
+                  "type": "folder",
+                  "icon": "📁",
+                  "children": [
+                    {
+                      "name": "index.tsx",
+                      "type": "file",
+                      "icon": "⚛️"
+                    }
+                  ]
+                },
+                {
+                  "name": "table",
+                  "type": "folder",
+                  "icon": "📁",
+                  "children": [
+                    {
+                      "name": "index.tsx",
+                      "type": "file",
+                      "icon": "⚛️"
+                    }
+                  ]
+                },
+                {
+                  "name": "videos",
+                  "type": "folder",
+                  "icon": "📁",
+                  "children": [
+                    {
+                      "name": "AspectRatioVideo.tsx",
+                      "type": "file",
+                      "icon": "⚛️"
+                    },
+                    {
+                      "name": "FourIsToThree.tsx",
+                      "type": "file",
+                      "icon": "⚛️"
+                    },
+                    {
+                      "name": "OneIsToOne.tsx",
+                      "type": "file",
+                      "icon": "⚛️"
+                    },
+                    {
+                      "name": "SixteenIsToNine.tsx",
+                      "type": "file",
+                      "icon": "⚛️"
+                    },
+                    {
+                      "name": "TwentyOneIsToNine.tsx",
+                      "type": "file",
+                      "icon": "⚛️"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "config",
+          "type": "folder",
+          "icon": "📁"
+        },
+        {
+          "name": "context",
+          "type": "folder",
+          "icon": "📁",
+          "children": [
+            {
+              "name": "AuthContext.tsx",
+              "type": "file",
+              "icon": "⚛️"
+            },
+            {
+              "name": "SidebarContext.tsx",
+              "type": "file",
+              "icon": "⚛️"
+            },
+            {
+              "name": "ThemeContext.tsx",
+              "type": "file",
+              "icon": "⚛️"
+            }
+          ]
+        },
+        {
+          "name": "hooks",
+          "type": "folder",
+          "icon": "📁",
+          "children": [
+            {
+              "name": "useGoBack.ts",
+              "type": "file",
+              "icon": "📘"
+            },
+            {
+              "name": "useModal.ts",
+              "type": "file",
+              "icon": "📘"
+            }
+          ]
+        },
+        {
+          "name": "icons",
+          "type": "folder",
+          "icon": "📁",
+          "children": [
+            {
+              "name": "alert-hexa.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "alert.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "android.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "angle-down.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "angle-left.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "angle-right.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "angle-up.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "application.png",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "arrow-down.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "arrow-right.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "arrow-up.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "audio.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "bolt.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "box-cube.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "box-line.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "box.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "bug-malware-svgrepo-com.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "calendar.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "calender-line.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "chat.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "check-circle.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "check-line.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "chevron-down.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "chevron-left.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "chevron-up.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "close-line.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "close.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "copy.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "docs.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "dollar-line.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "download.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "envelope.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "eye-close.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "eye.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "f1.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "file.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "files.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "folder.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "googlecolab.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "googlephotos.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "grid.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "group.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "horizontal-dots.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "index.ts",
+              "type": "file",
+              "icon": "📘"
+            },
+            {
+              "name": "info-error.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "info-hexa.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "info.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "list.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "lock.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "mail-line.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "moredot.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "page.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "paper-plane.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "pencil.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "pie-chart.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "plug-in.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "plus.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "react.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "shooting-star.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "table.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "task-icon.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "time.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "trash.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "user-circle.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "user-line.svg",
+              "type": "file",
+              "icon": "🖼️"
+            },
+            {
+              "name": "videos.svg",
+              "type": "file",
+              "icon": "🖼️"
+            }
+          ]
+        },
+        {
+          "name": "layout",
+          "type": "folder",
+          "icon": "📁",
+          "children": [
+            {
+              "name": "AppHeader.tsx",
+              "type": "file",
+              "icon": "⚛️"
+            },
+            {
+              "name": "AppLayout.tsx",
+              "type": "file",
+              "icon": "⚛️"
+            },
+            {
+              "name": "AppSidebar.tsx",
+              "type": "file",
+              "icon": "⚛️"
+            },
+            {
+              "name": "Backdrop.tsx",
+              "type": "file",
+              "icon": "⚛️"
+            },
+            {
+              "name": "SidebarWidget.tsx",
+              "type": "file",
+              "icon": "⚛️"
+            }
+          ]
+        },
+        {
+          "name": "pages",
+          "type": "folder",
+          "icon": "📁",
+          "children": [
+            {
+              "name": "AuthPages",
+              "type": "folder",
+              "icon": "📁",
+              "children": [
+                {
+                  "name": "AuthPageLayout.tsx",
+                  "type": "file",
+                  "icon": "⚛️"
+                },
+                {
+                  "name": "SignIn.tsx",
+                  "type": "file",
+                  "icon": "⚛️"
+                },
+                {
+                  "name": "SignUp.tsx",
+                  "type": "file",
+                  "icon": "⚛️"
+                }
+              ]
+            },
+            {
+              "name": "Charts",
+              "type": "folder",
+              "icon": "📁",
+              "children": [
+                {
+                  "name": "BarChart.tsx",
+                  "type": "file",
+                  "icon": "⚛️"
+                },
+                {
+                  "name": "LineChart.tsx",
+                  "type": "file",
+                  "icon": "⚛️"
+                }
+              ]
+            },
+            {
+              "name": "Dashboard",
+              "type": "folder",
+              "icon": "📁",
+              "children": [
+                {
+                  "name": "Home.tsx",
+                  "type": "file",
+                  "icon": "⚛️"
+                }
+              ]
+            },
+            {
+              "name": "Forms",
+              "type": "folder",
+              "icon": "📁",
+              "children": [
+                {
+                  "name": "FormElements.tsx",
+                  "type": "file",
+                  "icon": "⚛️"
+                }
+              ]
+            },
+            {
+              "name": "OtherPage",
+              "type": "folder",
+              "icon": "📁",
+              "children": [
+                {
+                  "name": "NotFound.tsx",
+                  "type": "file",
+                  "icon": "⚛️"
+                }
+              ]
+            },
+            {
+              "name": "Tables",
+              "type": "folder",
+              "icon": "📁",
+              "children": [
+                {
+                  "name": "Metrics.tsx",
+                  "type": "file",
+                  "icon": "⚛️"
+                }
+              ]
+            },
+            {
+              "name": "UiElements",
+              "type": "folder",
+              "icon": "📁",
+              "children": [
+                {
+                  "name": "Alerts.tsx",
+                  "type": "file",
+                  "icon": "⚛️"
+                },
+                {
+                  "name": "Avatars.tsx",
+                  "type": "file",
+                  "icon": "⚛️"
+                },
+                {
+                  "name": "Badges.tsx",
+                  "type": "file",
+                  "icon": "⚛️"
+                },
+                {
+                  "name": "Buttons.tsx",
+                  "type": "file",
+                  "icon": "⚛️"
+                },
+                {
+                  "name": "Images.tsx",
+                  "type": "file",
+                  "icon": "⚛️"
+                },
+                {
+                  "name": "Videos.tsx",
+                  "type": "file",
+                  "icon": "⚛️"
+                }
+              ]
+            },
+            {
+              "name": "Blank.tsx",
+              "type": "file",
+              "icon": "⚛️"
+            },
+            {
+              "name": "Calendar.tsx",
+              "type": "file",
+              "icon": "⚛️"
+            },
+            {
+              "name": "UserProfiles.tsx",
+              "type": "file",
+              "icon": "⚛️"
+            }
+          ]
+        },
+        {
+          "name": "routes",
+          "type": "folder",
+          "icon": "📁",
+          "children": [
+            {
+              "name": "AdminRoute.tsx",
+              "type": "file",
+              "icon": "⚛️"
+            }
+          ]
+        },
+        {
+          "name": "services",
+          "type": "folder",
+          "icon": "📁"
+        },
+        {
+          "name": "types",
+          "type": "folder",
+          "icon": "📁"
+        },
+        {
+          "name": "App.tsx",
+          "type": "file",
+          "icon": "⚛️"
+        },
+        {
+          "name": "index.css",
+          "type": "file",
+          "icon": "🎨"
+        },
+        {
+          "name": "main.tsx",
+          "type": "file",
+          "icon": "⚛️"
+        },
+        {
+          "name": "svg.d.ts",
+          "type": "file",
+          "icon": "📘"
+        },
+        {
+          "name": "vite-env.d.ts",
+          "type": "file",
+          "icon": "📘"
+        }
+      ]
+    },
+    {
+      "name": ".gitignore",
+      "type": "file",
+      "icon": "📁"
+    },
+    {
+      "name": "LICENSE.md",
+      "type": "file",
+      "icon": "📝"
+    },
+    {
+      "name": "README.md",
+      "type": "file",
+      "icon": "📝"
+    },
+    {
+      "name": "eslint.config.js",
+      "type": "file",
+      "icon": "📜"
+    },
+    {
+      "name": "index.html",
+      "type": "file",
+      "icon": "🌐"
+    },
+    {
+      "name": "package-lock.json",
+      "type": "file",
+      "icon": "⚙️"
+    },
+    {
+      "name": "package.json",
+      "type": "file",
+      "icon": "📦"
+    },
+    {
+      "name": "postcss.config.js",
+      "type": "file",
+      "icon": "📜"
+    },
+    {
+      "name": "tsconfig.app.json",
+      "type": "file",
+      "icon": "⚙️"
+    },
+    {
+      "name": "tsconfig.json",
+      "type": "file",
+      "icon": "⚙️"
+    },
+    {
+      "name": "tsconfig.node.json",
+      "type": "file",
+      "icon": "⚙️"
+    },
+    {
+      "name": "vite.config.ts",
+      "type": "file",
+      "icon": "📘"
+    }
+  ],
+  "metadata": {
+    "generated": "2025-12-18T13:44:23.437Z",
+    "generator": "FileTree Pro Extension",
+    "version": "0.2.0",
+    "showIcons": true,
+    "maxDepth": 10
+  }
+}

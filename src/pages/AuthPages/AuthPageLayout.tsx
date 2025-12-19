@@ -1,7 +1,5 @@
 import React from "react";
 import GridShape from "../../components/common/GridShape";
-import { Link } from "react-router";
-//import ThemeTogglerTwo from "../../components/common/ThemeTogglerTwo";
 
 export default function AuthLayout({
   children,
@@ -9,23 +7,72 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="relative p-6 bg-white z-1 dark:bg-gray-900 sm:p-0">
-      <div className="relative flex flex-col justify-center w-full h-screen lg:flex-row dark:bg-gray-900 sm:p-0">
+    <div className="relative w-full h-screen overflow-hidden bg-white dark:bg-gray-900">
+      <div className="relative flex flex-col w-full h-full lg:flex-row">
+        {/* Left Side - Form */}
         {children}
-        <div className="items-center hidden w-full h-full lg:w-1/2 bg-brand-950 dark:bg-white/5 lg:grid">
-          <div className="relative flex items-center justify-center z-1">
-            {/* <!-- ===== Common Grid Shape Start ===== --> */}
+
+        {/* Right Side - Branding Panel */}
+        <div className="hidden lg:flex lg:w-1/2 h-full bg-slate-950 dark:bg-slate-950 relative overflow-hidden">
+          {/* Animated gradient background */}
+          <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950"></div>
+          
+          {/* Blue brand glow */}
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(59,130,246,0.25),transparent_60%)]"></div>
+          
+          {/* Secondary glow */}
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_70%,rgba(96,165,250,0.15),transparent_50%)]"></div>
+
+          {/* Grid overlay */}
+          <div className="absolute inset-0 opacity-[0.12] pointer-events-none">
             <GridShape />
-            <div className="flex flex-col items-center max-w-xs">
-              <Link to="/" className="block mb-4">
-                
-              </Link>
-             
+          </div>
+
+          {/* Subtle border on the left edge */}
+          <div className="absolute top-0 left-0 w-px h-full bg-gradient-to-b from-transparent via-blue-500/20 to-transparent"></div>
+
+          {/* Content - Perfectly Centered */}
+          <div className="absolute inset-0 flex items-center justify-center p-12">
+            <div className="relative z-10 flex flex-col items-center text-center max-w-lg">
+              {/* Logo with subtle animation */}
+              <div className="mb-10 transform transition-transform duration-300 hover:scale-105">
+                <img
+                  src="/images/logo/ca-india-seeklogo.png"
+                  alt="CA Console Logo"
+                  className="h-44 w-auto drop-shadow-2xl"
+                />
+              </div>
+
+              {/* Title */}
+              <h2 className="text-5xl font-bold text-white tracking-tight mb-4">
+                CA Console
+              </h2>
+
+              {/* Subtitle */}
+              <p className="text-white/70 text-lg leading-relaxed max-w-md">
+                Professional dashboard for Chartered Accountants
+              </p>
+
+              {/* Decorative line */}
+              <div className="mt-8 w-24 h-1 bg-gradient-to-r from-transparent via-blue-500/50 to-transparent rounded-full"></div>
+
+              {/* Features */}
+              <div className="mt-12 space-y-4 text-left">
+                <div className="flex items-center gap-3 text-white/60">
+                  <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                  <span className="text-sm">Secure authentication</span>
+                </div>
+                <div className="flex items-center gap-3 text-white/60">
+                  <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                  <span className="text-sm">Role-based access control</span>
+                </div>
+                <div className="flex items-center gap-3 text-white/60">
+                  <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                  <span className="text-sm">Comprehensive task management</span>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-        <div className="fixed z-50 hidden bottom-6 right-6 sm:block">
-        
         </div>
       </div>
     </div>
