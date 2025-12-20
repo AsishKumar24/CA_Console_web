@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { BASE_URL } from "../../utils/constants";
 import Input from "../../components/form/input/InputField";
 import Button from "../../components/ui/button/Button";
+import { AuthContext } from "../../context/AuthContext";
 
 interface Client {
   _id: string;
@@ -18,6 +19,8 @@ interface Client {
 
 export default function ClientList() {
   const navigate = useNavigate();
+  const authContext = useContext(AuthContext);
+  const isAdmin = authContext?.user?.role === "ADMIN";
 
   const [clients, setClients] = useState<Client[]>([]);
   const [search, setSearch] = useState("");
@@ -32,13 +35,16 @@ export default function ClientList() {
   const fetchClients = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`${BASE_URL}/api/clients`, {
-        params: { 
+      // Use different endpoint based on role
+      const endpoint = isAdmin ? `${BASE_URL}/api/clients` : `${BASE_URL}/api/clients/staff`;
+      
+      const res = await axios.get(endpoint, {
+        params: isAdmin ? { 
           page, 
           limit, 
           search,
-          isActive: statusFilter === "all" ? undefined : statusFilter === "active"
-        },
+          statusFilter
+        } : undefined, // Staff endpoint doesn't support pagination yet
         withCredentials: true
       });
 
@@ -81,9 +87,11 @@ export default function ClientList() {
           </p>
         </div>
 
-        <Button onClick={() => navigate("/clients/create")}>
-          + Add Client
-        </Button>
+        {isAdmin && (
+          <Button onClick={() => navigate("/clients/create")}>
+            + Add Client
+          </Button>
+        )}
       </div>
 
       {/* Stats */}

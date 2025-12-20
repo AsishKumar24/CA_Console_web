@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
+import confetti from "canvas-confetti";
 import { BASE_URL } from "../../utils/constants";
 import { useAuth } from "../../api/useAuth";
 import Button from "../../components/ui/button/Button";
@@ -104,13 +105,35 @@ export default function TaskDetails() {
   const fetchTask = async () => {
     try {
       setLoading(true);
+      setError(null);
+      
+      console.log('🔍 Fetching task with ID:', taskId);
+      console.log('📡 API URL:', `${BASE_URL}/api/tasks/${taskId}`);
+      
       const res = await axios.get(`${BASE_URL}/api/tasks/${taskId}`, {
         withCredentials: true,
       });
+      
+      console.log('✅ Task fetched successfully:', res.data);
       setTask(res.data.task);
       setNewStatus(res.data.task.status);
     } catch (err: any) {
-      setError(err?.response?.data?.error || "Failed to fetch task");
+      console.error('❌ Error fetching task:', err);
+      console.error('Response status:', err.response?.status);
+      console.error('Response data:', err.response?.data);
+      console.error('Full error:', err);
+      
+      if (err.response?.status === 404) {
+        setError(`Task not found. The backend route 'GET /api/tasks/:taskId' may be missing.`);
+      } else if (err.response?.status === 403) {
+        setError('Permission denied. You do not have access to this task.');
+      } else if (err.response?.status === 500) {
+        setError(`Server error: ${err.response?.data?.error || 'Backend issue'}`);
+      } else if (!err.response) {
+        setError('Cannot connect to backend. Is the server running?');
+      } else {
+        setError(err?.response?.data?.error || "Failed to fetch task");
+      }
     } finally {
       setLoading(false);
     }
@@ -168,11 +191,49 @@ export default function TaskDetails() {
     
     try {
       setUpdatingStatus(true);
+      
+      // Check if we're completing the task
+      const isCompleting = newStatus === "COMPLETED" && task?.status !== "COMPLETED";
+      
       await axios.patch(
         `${BASE_URL}/api/tasks/${taskId}/status`,
         { status: newStatus, note: statusNote },
         { withCredentials: true }
       );
+      
+      // 🎉 Trigger confetti celebration when completing a task!
+      if (isCompleting) {
+        const duration = 3000;
+        const animationEnd = Date.now() + duration;
+        const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 999999 };
+
+        function randomInRange(min: number, max: number) {
+          return Math.random() * (max - min) + min;
+        }
+
+        const interval: any = setInterval(function() {
+          const timeLeft = animationEnd - Date.now();
+
+          if (timeLeft <= 0) {
+            return clearInterval(interval);
+          }
+
+          const particleCount = 50 * (timeLeft / duration);
+          
+          // Launch confetti from two sides
+          confetti({
+            ...defaults,
+            particleCount,
+            origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
+          });
+          confetti({
+            ...defaults,
+            particleCount,
+            origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
+          });
+        }, 250);
+      }
+      
       setStatusNote("");
       fetchTask();
     } catch (err: any) {
@@ -292,28 +353,77 @@ export default function TaskDetails() {
       </h1>
         </div>
 
-        {isAdmin && isOwner && !task.isArchived && (
+        {/* Admin Controls - Archive only for NOT_STARTED tasks */}
+        {isAdmin && !task.isArchived && task.status === "NOT_STARTED" && (
           <div className="flex gap-2">
             {!isEditing && (
               <Button variant="outline" size="sm" onClick={startEdit}>
-                Edit Task
+                ✏️ Edit Task
               </Button>
             )}
             <Button
               variant="outline"
               size="sm"
               onClick={handleArchive}
-              className="text-red-600"
+              className="text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20"
             >
-              Archive
+              📦 Archive
             </Button>
           </div>
         )}
 
-        {isAdmin && isOwner && task.isArchived && (
-          <Button variant="outline" size="sm" onClick={handleRestore}>
-            Restore Task
-          </Button>
+        {/* Edit Only (No Archive) for IN_PROGRESS tasks */}
+        {isAdmin && !task.isArchived && task.status === "IN_PROGRESS" && (
+          <div className="flex gap-2">
+            {!isEditing && (
+              <Button variant="outline" size="sm" onClick={startEdit}>
+                ✏️ Edit Task
+              </Button>
+            )}
+          </div>
+        )}
+
+        {/* View Only Badge for Completed Tasks */}
+        {task.status === "COMPLETED" && !task.isArchived && (
+          <div className="flex items-center gap-2">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 border border-green-200 dark:border-green-800">
+              <span className="text-sm font-semibold text-green-700 dark:text-green-300">
+                ✓ Completed - Will auto-archive in 7 days
+              </span>
+            </div>
+            {/* Billing Button - Admin Only */}
+            {isAdmin && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate(`/billing/task/${taskId}`)}
+                className="text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/20"
+              >
+                💰 Billing
+              </Button>
+            )}
+          </div>
+        )}
+
+        {/* Archived Badge */}
+        {task.isArchived && (
+          <div className="flex gap-2 items-center">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700">
+              <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">📦 Archived</span>
+            </div>
+            {isAdmin && (
+              <Button variant="outline" size="sm" onClick={handleRestore}>
+                🔄 Restore Task
+              </Button>
+            )}
+          </div>
+        )}
+
+        {/* Staff View Only Badge */}
+        {!isAdmin && (
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800">
+            <span className="text-xs font-semibold text-blue-700 dark:text-blue-300">👁️ View Only</span>
+          </div>
         )}
       </div>
 
@@ -322,7 +432,7 @@ export default function TaskDetails() {
         <div className="lg:col-span-2 space-y-6">
           {/* Task Info Card */}
           <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-6">
-            {isEditing ? (
+            {isEditing && isAdmin ? (
               /* Edit Mode */
               <div className="space-y-4">
                 <div>
@@ -552,7 +662,8 @@ export default function TaskDetails() {
             <h3 className="font-semibold text-gray-900 dark:text-white mb-4">Notes</h3>
 
             {/* Add Note */}
-            {!task.isArchived && (
+            {/* Add Note - Available to all users, but not archived or completed */}
+            {!task.isArchived && task.status !== "COMPLETED" && (
               <div className="mb-4 space-y-3">
                 <textarea
                   value={noteMessage}
@@ -595,26 +706,27 @@ export default function TaskDetails() {
         {/* Sidebar */}
         <div className="space-y-6">
           {/* Assignment */}
-          {isAdmin && isOwner && !task.isArchived && (
+          {/* Assignment Section - Admin Only, Not Archived, Not Completed */}
+          {isAdmin && !task.isArchived && task.status !== "COMPLETED" && (
             <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-5">
               <h3 className="font-semibold text-gray-900 dark:text-white mb-3">
-                Assignment
+                👤 Assignment
               </h3>
               {task.assignedTo ? (
-                <div className="mb-4">
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                  <p className="text-xs text-blue-600 dark:text-blue-400 font-medium mb-1">
                     Currently assigned to:
                   </p>
-                  <p className="font-medium text-gray-900 dark:text-white mt-1">
+                  <p className="font-semibold text-gray-900 dark:text-white">
                     {task.assignedTo.firstName}
                   </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                  <p className="text-xs text-gray-600 dark:text-gray-400">
                     {task.assignedTo.email}
                   </p>
                 </div>
               ) : (
-                <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-                  Not assigned
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-4 italic">
+                  ⚠️ Not assigned to anyone
                 </p>
               )}
 
@@ -639,6 +751,23 @@ export default function TaskDetails() {
                 >
                   {assigning ? "Assigning..." : "Assign Task"}
                 </Button>
+              </div>
+            </div>
+          )}
+
+          {/* Read-Only Assignment Info for Staff or Completed Tasks */}
+          {(!isAdmin || task.status === "COMPLETED" || task.isArchived) && task.assignedTo && (
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-5">
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-3">
+                👤 Assigned To
+              </h3>
+              <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                <p className="font-medium text-gray-900 dark:text-white">
+                  {task.assignedTo.firstName}
+                </p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                  {task.assignedTo.email}
+                </p>
               </div>
             </div>
           )}

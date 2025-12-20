@@ -134,9 +134,17 @@ export default function AllTasks() {
           </p>
         </div>
 
-        <Button onClick={() => navigate("/tasks")}>
-          + Create Task
-        </Button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => navigate("/tasks/archived")}
+            className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+          >
+            📦 Archived Tasks
+          </button>
+          <Button onClick={() => navigate("/tasks")}>
+            + Create Task
+          </Button>
+        </div>
       </div>
 
       {/* Stats */}
@@ -261,16 +269,15 @@ export default function AllTasks() {
                     </td>
 
                     <td className="px-6 py-4">
-                      <div className="text-gray-700 dark:text-gray-300">
-                        {task.client.name}
-                      </div>
-                      {task.client.code && (
-                        <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                          {task.client.code}
-                        </div>
-                      )}
-                    </td>
-
+  <div className="text-blue-600 dark:text-blue-400">
+    {task.client.name}
+  </div>
+  {task.client.code && (
+    <div className="inline-flex items-center px-2 py-0.5 mt-1 rounded-md bg-blue-100 text-blue-400 dark:bg-blue-900/30 dark:text-blue-300 text-xs font-medium">
+      {task.client.code}
+    </div>
+  )}
+</td>
                     <td className="px-6 py-4 text-gray-700 dark:text-gray-300">
                       {task.assignedTo ? task.assignedTo.firstName : "—"}
                     </td>
@@ -300,12 +307,44 @@ export default function AllTasks() {
                     </td>
 
                     <td className="px-6 py-4">
-                      <button
-                        onClick={() => navigate(`/tasks/${task._id}`)}
-                        className="text-xs text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium"
-                      >
-                        View Details
-                      </button>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => navigate(`/tasks/${task._id}`)}
+                          className="text-xs text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium"
+                        >
+                          View
+                        </button>
+                        {task.status === "NOT_STARTED" && (
+                          <button
+                            onClick={async () => {
+                              if (!window.confirm(`Archive task: ${task.title}?`)) return;
+                              try {
+                                await axios.patch(
+                                  `${BASE_URL}/api/tasks/${task._id}/archive`,
+                                  {},
+                                  { withCredentials: true }
+                                );
+                                // Refresh task list
+                                fetchTasks();
+                              } catch (err: any) {
+                                alert(err?.response?.data?.error || 'Failed to archive task');
+                              }
+                            }}
+                            className="text-xs text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 font-medium"
+                          >
+                            Archive
+                          </button>
+                        )}
+                        {task.status === "COMPLETED" && (
+                          <button
+                            onClick={() => navigate(`/billing/task/${task._id}`)}
+                            className="flex items-center gap-1 text-xs text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300 font-medium"
+                            title="Manage Billing"
+                          >
+                            💰 Bill
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}

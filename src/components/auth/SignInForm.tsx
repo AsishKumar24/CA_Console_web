@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
+import DeveloperFooter from "./DeveloperFooter";
 import { useNavigate } from "react-router";
 import axios from "axios";
 
@@ -8,6 +9,7 @@ import Input from "../form/input/InputField";
 import Checkbox from "../form/input/Checkbox";
 import Button from "../ui/button/Button";
 import { BASE_URL } from "../../utils/constants";
+import { AuthContext } from "../../context/AuthContext";
 
 /**
  * SignInForm
@@ -21,6 +23,7 @@ import { BASE_URL } from "../../utils/constants";
  */
 export default function SignInForm() {
   const navigate = useNavigate();
+  const authContext = useContext(AuthContext);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -53,6 +56,11 @@ export default function SignInForm() {
         }
       );
      
+      // ✅ FIX: Refresh user data in AuthContext immediately after login
+      if (authContext?.refreshUser) {
+        await authContext.refreshUser();
+      }
+
       // If login succeeds, backend cookie is set
       // Redirect to dashboard
       navigate("/");
@@ -168,6 +176,8 @@ export default function SignInForm() {
               Contact your administrator if you need help accessing your account.
             </p>
           </div>
+
+          <DeveloperFooter />
         </div>
       </div>
     </div>

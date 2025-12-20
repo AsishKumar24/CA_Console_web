@@ -1,9 +1,9 @@
 import { useState } from "react";
+import DeveloperFooter from "./DeveloperFooter";
 import { Link } from "react-router-dom";
 import { ChevronLeftIcon, EyeCloseIcon, EyeIcon } from "../../icons";
 import Label from "../form/Label";
 import Input from "../form/input/InputField";
-import Checkbox from "../form/input/Checkbox";
 import { BASE_URL } from "../../utils/constants";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -20,7 +20,6 @@ export default function SignUpForm() {
   const [password, setPassword] = useState("");
 
   const [showPassword, setShowPassword] = useState(false);
-  const [isChecked, setIsChecked] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -196,6 +195,8 @@ export default function SignUpForm() {
               Only administrators can create staff accounts. Ensure all details are accurate.
             </p>
           </div>
+
+          <DeveloperFooter />
         </div>
       </div>
     </div>

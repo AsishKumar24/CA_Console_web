@@ -11,12 +11,14 @@ interface User {
   firstName: string;
   email: string;
   role: string;
+  isActive?: boolean; // Optional for backward compatibility
 }
 
 interface Client {
   _id: string;
   name: string;
   code?: string;
+  isActive?: boolean; // Optional for backward compatibility
 }
 
 const ASSESSMENT_YEARS = [
@@ -26,12 +28,49 @@ const ASSESSMENT_YEARS = [
   "2026-27",
 ];
 
-const PERIODS = ["Monthly", "Quarterly", "Yearly"];
+const PERIODS = ["One Time","Monthly", "Quarterly", "Yearly"];
+
+// Main Service Types
+const SERVICE_TYPES = [
+  "GST",
+  "IT",
+  "Project Report",
+  "Audit",
+  "Tenders",
+  "DSC",
+  "ROC Filing",
+  "TDS",
+  "Bookkeeping",
+  "Other (Custom)"
+];
+
+// Sub-categories for each service type
+const SERVICE_SUB_CATEGORIES: Record<string, string[]> = {
+  "GST": ["Return Filing", "Notice", "Appeal", "Tribunal", "Others"],
+  "IT": ["Return Filing", "Notice", "Appeal", "Tribunal", "Others"],
+  "Project Report": ["DPR", "CMA", "Others"],
+  "Audit": ["Tax Audit", "Company Audit", "Trust Audit", "Government Audit", "Others"],
+  "Tenders": ["SPCL Contractor", "A-Class", "B-Class", "C-Class", "D-Class", "Others"],
+  "DSC": ["Individual", "Individual Combo", "Org. Combo", "Govt. Combo", "Others"],
+  "ROC Filing": ["Annual Filing", "Change in Directors", "Incorporation", "Closure", "Others"],
+  "TDS": ["Quarterly Return", "Annual Return", "TDS Refund", "Others"],
+  "Bookkeeping": ["Monthly", "Quarterly", "Annual", "Others"]
+};
+
+// Third-level categories (for Return Filing in GST/IT)
+const RETURN_FILING_TYPES: Record<string, string[]> = {
+  "GST": ["GSTR1", "GSTR3B", "Others"],
+  "IT": ["Individual", "Partnership", "Company", "Trust", "Others"]
+};
 
 export default function CreateTask() {
   // ===== Task Fields =====
   const [title, setTitle] = useState("");
+  const [titleManuallyEdited, setTitleManuallyEdited] = useState(false);
   const [serviceType, setServiceType] = useState("");
+  const [subCategory, setSubCategory] = useState("");
+  const [returnType, setReturnType] = useState(""); // For Return Filing
+  const [customServiceType, setCustomServiceType] = useState("");
   const [priority, setPriority] = useState("NORMAL");
   const [dueDate, setDueDate] = useState("");
   const [assessmentYear, setAssessmentYear] = useState("");
@@ -55,11 +94,35 @@ export default function CreateTask() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
+  // ===== Auto-populate Title from Service Type =====
+  useEffect(() => {
+    // Only auto-populate if user hasn't manually edited the title
+    if (titleManuallyEdited) return;
+
+    let autoTitle = "";
+
+    if (serviceType && serviceType !== "Other (Custom)") {
+      if (subCategory) {
+        if (subCategory === "Return Filing" && returnType) {
+          autoTitle = `${serviceType} - Return Filing (${returnType})`;
+        } else {
+          autoTitle = `${serviceType} - ${subCategory}`;
+        }
+      } else {
+        autoTitle = serviceType;
+      }
+    } else if (serviceType === "Other (Custom)" && customServiceType) {
+      autoTitle = customServiceType;
+    }
+
+    setTitle(autoTitle);
+  }, [serviceType, subCategory, returnType, customServiceType, titleManuallyEdited]);
+
   // ===== Fetch Assignable Users =====
   useEffect(() => {
     axios
       .get(BASE_URL + "/auth/assignable", { withCredentials: true })
-      .then(res => setUsers(res.data.users))
+      .then(res => setUsers(res.data.users.filter((u: User) => u.isActive !== false)))
       .catch(() => setUsers([]));
   }, []);
 
@@ -78,7 +141,7 @@ export default function CreateTask() {
           withCredentials: true
         })
         .then(res => {
-          setClients(res.data.clients);
+          setClients(res.data.clients.filter((c: Client) => c.isActive !== false));
           setSearchLoading(false);
         })
         .catch(() => {
@@ -107,10 +170,26 @@ export default function CreateTask() {
     try {
       setLoading(true);
       
+      // Build service type based on selections
+      let finalServiceType = serviceType;
+      
+      if (serviceType && serviceType !== "Other (Custom)" && subCategory) {
+        // Has sub-category
+        if (subCategory === "Return Filing" && returnType) {
+          // Full hierarchy with return type
+          finalServiceType = `${serviceType} - Return Filing (${returnType})`;
+        } else {
+          // Just service + sub-category
+          finalServiceType = `${serviceType} - ${subCategory}`;
+        }
+      } else if (serviceType === "Other (Custom)" && customServiceType) {
+        finalServiceType = customServiceType;
+      }
+      
       // Prepare payload
       const payload: any = {
         title,
-        serviceType,
+        serviceType: finalServiceType,
         priority,
         dueDate,
         assessmentYear,
@@ -134,7 +213,11 @@ export default function CreateTask() {
 
       setSuccess(true);
       setTitle("");
+      setTitleManuallyEdited(false);
       setServiceType("");
+      setSubCategory("");
+      setReturnType("");
+      setCustomServiceType("");
       setPriority("NORMAL");
       setDueDate("");
       setAssessmentYear("");
@@ -159,6 +242,24 @@ export default function CreateTask() {
     setClientSearch("");
     setClients([]);
     clientInputRef.current?.focus();
+  };
+
+  // Get sub-categories for selected service
+  const getSubCategories = () => {
+    if (!serviceType || serviceType === "Other (Custom)") return [];
+    return SERVICE_SUB_CATEGORIES[serviceType] || [];
+  };
+
+  // Check if return type dropdown should show
+  const showReturnTypeDropdown = () => {
+    return subCategory === "Return Filing" && 
+           (serviceType === "GST" || serviceType === "IT");
+  };
+
+  // Get return types for selected service
+  const getReturnTypes = () => {
+    if (!serviceType) return [];
+    return RETURN_FILING_TYPES[serviceType] || [];
   };
 
   return (
@@ -189,7 +290,10 @@ export default function CreateTask() {
                 <Input
                   placeholder="e.g., GST Filing – March 2024"
                   value={title}
-                  onChange={(e) => setTitle(e.target.value)}
+                  onChange={(e) => {
+                    setTitle(e.target.value);
+                    setTitleManuallyEdited(true);
+                  }}
                   required
                 />
               </div>
@@ -197,11 +301,27 @@ export default function CreateTask() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label>Service Type</Label>
-                  <Input
-                    placeholder="GST / IT / Audit"
+                  <select
                     value={serviceType}
-                    onChange={(e) => setServiceType(e.target.value)}
-                  />
+                    onChange={(e) => {
+                      const newValue = e.target.value;
+                      setServiceType(newValue);
+                      // Reset dependent fields
+                      setSubCategory("");
+                      setReturnType("");
+                      if (newValue !== "Other (Custom)") {
+                        setCustomServiceType("");
+                      }
+                    }}
+                    className="h-11 w-full rounded-lg border border-gray-300 dark:border-gray-700 px-4 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="">Select Service Type</option>
+                    {SERVICE_TYPES.map((type) => (
+                      <option key={type} value={type}>
+                        {type}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
                 <div>
@@ -217,7 +337,65 @@ export default function CreateTask() {
                   </select>
                 </div>
               </div>
+
+              {/* Sub-category dropdown (appears for all services except Other) */}
+              {getSubCategories().length > 0 && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label>{serviceType} Category</Label>
+                    <select
+                      value={subCategory}
+                      onChange={(e) => {
+                        setSubCategory(e.target.value);
+                        if (e.target.value !== "Return Filing") {
+                          setReturnType("");
+                        }
+                      }}
+                      className="h-11 w-full rounded-lg border border-gray-300 dark:border-gray-700 px-4 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      <option value="">Select Category</option>
+                      {getSubCategories().map((sub) => (
+                        <option key={sub} value={sub}>
+                          {sub}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Return Type dropdown (only for GST/IT Return Filing) */}
+                  {showReturnTypeDropdown() && (
+                    <div>
+                      <Label>Return Type</Label>
+                      <select
+                        value={returnType}
+                        onChange={(e) => setReturnType(e.target.value)}
+                        className="h-11 w-full rounded-lg border border-gray-300 dark:border-gray-700 px-4 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      >
+                        <option value="">Select Return</option>
+                        {getReturnTypes().map((type) => (
+                          <option key={type} value={type}>
+                            {type}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Custom Service Type (if Other selected) */}
+              {serviceType === "Other (Custom)" && (
+                <div>
+                  <Label>Custom Service Type</Label>
+                  <Input
+                    placeholder="Enter custom service type"
+                    value={customServiceType}
+                    onChange={(e) => setCustomServiceType(e.target.value)}
+                  />
+                </div>
+              )}
             </section>
+            
 
             {/* Client Search */}
             <section className="space-y-2">

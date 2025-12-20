@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import axios from "axios";
+import confetti from "canvas-confetti";
 import { BASE_URL } from "../../utils/constants";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../api/useAuth";
 
 interface Task {
   _id: string;
@@ -33,7 +35,7 @@ const PRIORITY_COLORS = {
 };
 
 // Task Card Component
-function TaskCard({ task }: { task: Task }) {
+function TaskCard({ task, onArchive }: { task: Task; onArchive: (taskId: string) => void }) {
   const navigate = useNavigate();
   
   const [{ isDragging }, drag] = useDrag({
@@ -105,17 +107,10 @@ function TaskCard({ task }: { task: Task }) {
           >
             View Details
           </button>
-          
           {task.status === "COMPLETED" && (
-            <button
-              onClick={() => {
-                // Handle billing
-                alert(`Billing for task: ${task.title}\nClient: ${task.client.name}`);
-              }}
-              className="px-3 py-1 text-xs bg-green-600 hover:bg-green-700 text-white rounded font-medium"
-            >
-              💰 Bill
-            </button>
+            <span className="text-[10px] text-green-600 dark:text-green-400 px-2 py-1 bg-green-50 dark:bg-green-950/20 rounded font-medium">
+              ✓ Completed
+            </span>
           )}
         </div>
       </div>
@@ -130,12 +125,14 @@ function Column({
   color,
   tasks,
   onDrop,
+  onArchive,
 }: {
   status: string;
   title: string;
   color: string;
   tasks: Task[];
   onDrop: (taskId: string, newStatus: string) => void;
+  onArchive: (taskId: string) => void;
 }) {
   const [{ isOver }, drop] = useDrop({
     accept: "TASK",
@@ -177,6 +174,7 @@ function Column({
             <TaskCard
               key={task._id}
               task={task}
+              onArchive={onArchive}
             />
           ))
         )}
@@ -187,16 +185,31 @@ function Column({
 
 // Main Component
 export default function AdminTaskBoard() {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(false);
 
   const fetchMyTasks = async () => {
     try {
       setLoading(true);
-      // Fetch tasks assigned to admin (self)
-      const res = await axios.get(`${BASE_URL}/api/tasks/my`, {
+      
+      if (!user?.id) {
+        console.error('User ID not available');
+        setLoading(false);
+        return;
+      }
+      
+      // Use getAdminTasks endpoint with assignedTo filter
+      // This shows ONLY tasks assigned to the current admin user
+      const res = await axios.get(`${BASE_URL}/api/tasks`, {
+        params: {
+          assignedTo: user.id  // Filter by assignedTo
+        },
         withCredentials: true,
       });
+      
       setTasks(res.data.tasks);
     } catch (err) {
       console.error("Failed to fetch tasks", err);
@@ -211,6 +224,10 @@ export default function AdminTaskBoard() {
 
   const handleStatusChange = async (taskId: string, newStatus: string) => {
     try {
+      // Check if completing a task
+      const task = tasks.find(t => t._id === taskId);
+      const isCompleting = newStatus === "COMPLETED" && task?.status !== "COMPLETED";
+      
       // Optimistically update UI
       setTasks((prevTasks) =>
         prevTasks.map((task) =>
@@ -224,10 +241,61 @@ export default function AdminTaskBoard() {
         { status: newStatus },
         { withCredentials: true }
       );
+      
+      // 🎉 Trigger confetti when completing a task!
+      if (isCompleting) {
+        const duration = 3000;
+        const animationEnd = Date.now() + duration;
+        const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 999999 };
+
+        function randomInRange(min: number, max: number) {
+          return Math.random() * (max - min) + min;
+        }
+
+        const interval: any = setInterval(function() {
+          const timeLeft = animationEnd - Date.now();
+
+          if (timeLeft <= 0) {
+            return clearInterval(interval);
+          }
+
+          const particleCount = 50 * (timeLeft / duration);
+          
+          confetti({
+            ...defaults,
+            particleCount,
+            origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
+          });
+          confetti({
+            ...defaults,
+            particleCount,
+            origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
+          });
+        }, 250);
+      }
     } catch (err) {
       console.error("Failed to update task status", err);
       // Revert on error
       fetchMyTasks();
+    }
+  };
+
+  const handleArchive = async (taskId: string) => {
+    if (!window.confirm("Are you sure you want to archive this task?")) {
+      return;
+    }
+
+    try {
+      await axios.patch(
+        `${BASE_URL}/api/tasks/${taskId}/archive`,
+        {},
+        { withCredentials: true }
+      );
+      // Remove from local state
+      setTasks((prevTasks) => prevTasks.filter((task) => task._id !== taskId));
+    } catch (err) {
+      console.error("Failed to archive task", err);
+      alert("Failed to archive task. Please try again.");
     }
   };
 
@@ -241,13 +309,21 @@ export default function AdminTaskBoard() {
     <DndProvider backend={HTML5Backend}>
       <div className="p-6 space-y-6">
         {/* Header */}
-        <div>
-          <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
-            My Task Board
-          </h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            Drag and drop tasks to update their status
-          </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
+              My Task Board
+            </h1>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+              Drag and drop tasks to update their status
+            </p>
+          </div>
+          <button
+            onClick={() => navigate("/tasks/archived")}
+            className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+          >
+            📦 Archived Tasks
+          </button>
         </div>
 
         {/* Stats */}
@@ -288,6 +364,7 @@ export default function AdminTaskBoard() {
                 color={config.color}
                 tasks={tasksByStatus[status as keyof typeof tasksByStatus]}
                 onDrop={handleStatusChange}
+                onArchive={handleArchive}
               />
             ))}
           </div>
@@ -301,7 +378,7 @@ export default function AdminTaskBoard() {
           <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-1">
             <li>• Drag tasks between columns to change their status</li>
             <li>• Color on left indicates priority (Red=High, Gray=Normal, Blue=Low)</li>
-            <li>• Completed tasks show a "Bill" button for creating invoices</li>
+            <li>• Completed tasks can be archived using the Archive button</li>
             <li>• Click "View Details" to see full task information</li>
           </ul>
         </div>

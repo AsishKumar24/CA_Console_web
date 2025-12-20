@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { BASE_URL } from "../../utils/constants";
 import Button from "../../components/ui/button/Button";
 import Input from "../../components/form/input/InputField";
 import Label from "../../components/form/Label";
+import { AuthContext } from "../../context/AuthContext";
 
 interface Client {
   _id: string;
@@ -23,6 +24,8 @@ interface Client {
 
 export default function ClientProfile() {
   const { id } = useParams();
+  const authContext = useContext(AuthContext);
+  const isAdmin = authContext?.user?.role === "ADMIN";
 
   const [client, setClient] = useState<Client | null>(null);
   const [form, setForm] = useState<Client | null>(null);
@@ -34,7 +37,12 @@ export default function ClientProfile() {
   useEffect(() => {
     const fetchClient = async () => {
       try {
-        const res = await axios.get(`${BASE_URL}/api/clients/${id}`, {
+        // Use staff endpoint for non-admin users
+        const endpoint = isAdmin 
+          ? `${BASE_URL}/api/clients/${id}`
+          : `${BASE_URL}/api/clients/staff/${id}`;
+        
+        const res = await axios.get(endpoint, {
           withCredentials: true
         });
         setClient(res.data.client);
@@ -91,25 +99,29 @@ export default function ClientProfile() {
         </div>
 
         <div className="flex gap-2">
-          {!editMode ? (
-            <Button size="sm" onClick={() => setEditMode(true)}>
-              Edit Client
-            </Button>
-          ) : (
+          {isAdmin && (
             <>
-              <Button size="sm" onClick={handleSave} disabled={saving}>
-                {saving ? "Saving..." : "Save"}
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => {
-                  setForm(client);
-                  setEditMode(false);
-                }}
-              >
-                Cancel
-              </Button>
+              {!editMode ? (
+                <Button size="sm" onClick={() => setEditMode(true)}>
+                  Edit Client
+                </Button>
+              ) : (
+                <>
+                  <Button size="sm" onClick={handleSave} disabled={saving}>
+                    {saving ? "Saving..." : "Save"}
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      setForm(client);
+                      setEditMode(false);
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                </>
+              )}
             </>
           )}
         </div>
