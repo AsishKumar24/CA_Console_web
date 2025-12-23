@@ -1,6 +1,6 @@
 // src/routes/AdminRoute.tsx
-import { Navigate, Outlet } from "react-router-dom";
-import { useAuth } from "../api/useAuth";
+import { Navigate, Outlet } from "react-router-dom"; // Trigger reload
+import { useAuth } from "../context/AuthContext";
 
 export default function AdminLayout() {
   const { user, loading } = useAuth();

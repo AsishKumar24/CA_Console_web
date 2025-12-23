@@ -137,7 +137,7 @@ export default function CreateTask() {
   useEffect(() => {
     const fetchUsers = () => {
       axios
-        .get(BASE_URL + "/auth/assignable", { withCredentials: true })
+        .get(`${BASE_URL}/auth/assignable`, { withCredentials: true })
         .then(res => setUsers(res.data.users.filter((u: User) => u.isActive !== false)))
         .catch(() => setUsers([]));
     };
@@ -154,7 +154,7 @@ export default function CreateTask() {
 
     const timer = setTimeout(() => {
       axios
-        .get(BASE_URL + `/api/clients?search=${clientSearch}`, {
+        .get(`${BASE_URL}/api/clients?search=${clientSearch}`, {
           withCredentials: true,
           signal: controller.signal
         })
@@ -240,7 +240,7 @@ export default function CreateTask() {
       }
 
       await axios.post(
-        BASE_URL + "/api/tasks",
+        `${BASE_URL}/api/tasks`,
         payload,
         { withCredentials: true }
       );

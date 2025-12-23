@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import confetti from "canvas-confetti";
 import { BASE_URL } from "../../utils/constants";
-import { useAuth } from "../../api/useAuth";
+import { useAuth } from "../../context/AuthContext";
 import Button from "../../components/ui/button/Button";
 import Label from "../../components/form/Label";
 import Input from "../../components/form/input/InputField";

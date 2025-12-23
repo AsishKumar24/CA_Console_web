@@ -19,7 +19,7 @@ import {
   Clock
 } from "phosphor-react";
 import { useSidebar } from "../context/SidebarContext";
-import { useAuth } from "../api/useAuth";
+import { useAuth } from "../context/AuthContext";
 
 type NavItem = {
   name: string;

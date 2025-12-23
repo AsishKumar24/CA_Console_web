@@ -69,7 +69,7 @@ export default function CreateClient() {
     try {
       setLoading(true);
       await axios.post(
-        BASE_URL + "/api/clients",
+        `${BASE_URL}/api/clients`,
         {
           name,
           code,

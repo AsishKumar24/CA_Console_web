@@ -1,9 +1,9 @@
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { BASE_URL } from "../../utils/constants";
 import { useNavigate } from "react-router-dom";
 import StaffDashboard from "./StaffDashboard";
-import { AuthContext } from "../../context/AuthContext";
+import { useAuth } from "../../context/AuthContext";
 import { SensitiveData } from "../../components/common/SensitiveData";
 
 interface DashboardStats {
@@ -43,7 +43,7 @@ interface RecentActivity {
 
 export default function Home() {
   const navigate = useNavigate();
-  const authContext = useContext(AuthContext);
+  const { user, loading: authLoading } = useAuth();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [recentActivities, setRecentActivities] = useState<RecentActivity[]>([]);
@@ -70,17 +70,17 @@ export default function Home() {
   };
 
   // Get user role from AuthContext
-  const isAdmin = authContext?.user?.role === "ADMIN";
+  const isAdmin = user?.role === "ADMIN";
 
   useEffect(() => {
     if (isAdmin) {
       fetchDashboardStats();
       fetchRecentActivities();
-    } else if (authContext?.user) {
+    } else if (user) {
       // If user is loaded but not admin, stop loading so we can show StaffDashboard
       setLoading(false);
     }
-  }, [isAdmin, authContext?.user]);
+  }, [isAdmin, user]);
 
   const fetchRecentActivities = async () => {
     try {
@@ -112,7 +112,7 @@ export default function Home() {
     }
   };
 
-  if (authContext?.loading || loading) {
+  if (authLoading || loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>

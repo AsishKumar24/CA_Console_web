@@ -5,7 +5,7 @@ import axios from "axios";
 import confetti from "canvas-confetti";
 import { BASE_URL } from "../../utils/constants";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../api/useAuth";
+import { useAuth } from "../../context/AuthContext";
 
 interface Task {
   _id: string;

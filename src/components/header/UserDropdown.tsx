@@ -4,7 +4,7 @@ import { Dropdown } from "../ui/dropdown/Dropdown";
 import { Link, useNavigate } from "react-router";
 import { logout } from "../../api/auth";
 import Button from "../ui/button/Button";
-import { useAuth } from "../../api/useAuth";
+import { useAuth } from "../../context/AuthContext";
 export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);
 

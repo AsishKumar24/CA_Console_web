@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from "react-router";
 import { useSidebar } from "../context/SidebarContext";
 import { ThemeToggleButton } from "../components/common/ThemeToggleButton";
 import UserDropdown from "../components/header/UserDropdown";
-import { useAuth } from "../api/useAuth";
+import { useAuth } from "../context/AuthContext";
 import { Breadcrumb } from "../components/common/Breadcrumb";
 
 const AppHeader: React.FC = () => {

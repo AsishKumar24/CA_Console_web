@@ -7,7 +7,7 @@ import "flatpickr/dist/flatpickr.css";
 import App from "./App";
 import { AppWrapper } from "./components/common/PageMeta";
 import { ThemeProvider } from "./context/ThemeContext";
-import { AuthProvider } from "./context/AuthContext";
+import { AuthProvider } from "./context/AuthProvider";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

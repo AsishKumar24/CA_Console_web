@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { BASE_URL } from "../utils/constants";
-import { useAuth } from "../api/useAuth";
+import { useAuth } from "../context/AuthContext";
 import Button from "../components/ui/button/Button";
 import Input from "../components/form/input/InputField";
 import Label from "../components/form/Label";
@@ -44,7 +44,7 @@ export default function ProfilePage() {
   const fetchStaff = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(BASE_URL + "/api/users/staff", {
+      const res = await axios.get(`${BASE_URL}/api/users/staff`, {
         withCredentials: true
       });
       setStaff(res.data.staff);
@@ -77,7 +77,7 @@ export default function ProfilePage() {
       setError(null);
       
       await axios.patch(
-        BASE_URL + `/api/users/${editingStaff._id}`,
+        `${BASE_URL}/api/users/${editingStaff._id}`,
         formData,
         { withCredentials: true }
       );

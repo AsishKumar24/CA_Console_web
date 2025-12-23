@@ -1,10 +1,10 @@
-import { useEffect, useState, useContext, useCallback } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { BASE_URL } from "../../utils/constants";
+import { useAuth } from "../../context/AuthContext";
 import Input from "../../components/form/input/InputField";
 import Button from "../../components/ui/button/Button";
-import { AuthContext } from "../../context/AuthContext";
 
 interface Client {
   _id: string;
@@ -19,8 +19,8 @@ interface Client {
 
 export default function ClientList() {
   const navigate = useNavigate();
-  const authContext = useContext(AuthContext);
-  const isAdmin = authContext?.user?.role === "ADMIN";
+  const { user } = useAuth();
+  const isAdmin = user?.role === "ADMIN";
 
   const [clients, setClients] = useState<Client[]>([]);
   const [search, setSearch] = useState("");

@@ -1,11 +1,11 @@
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { BASE_URL } from "../../utils/constants";
 import Button from "../../components/ui/button/Button";
 import Input from "../../components/form/input/InputField";
 import Label from "../../components/form/Label";
-import { AuthContext } from "../../context/AuthContext";
+import { useAuth } from "../../context/AuthContext";
 
 interface Client {
   _id: string;
@@ -24,8 +24,8 @@ interface Client {
 
 export default function ClientProfile() {
   const { id } = useParams();
-  const authContext = useContext(AuthContext);
-  const isAdmin = authContext?.user?.role === "ADMIN";
+  const { user } = useAuth();
+  const isAdmin = user?.role === "ADMIN";
 
   const [client, setClient] = useState<Client | null>(null);
   const [form, setForm] = useState<Client | null>(null);

@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState } from "react";
 import DeveloperFooter from "./DeveloperFooter";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
@@ -9,7 +9,7 @@ import Input from "../form/input/InputField";
 import Checkbox from "../form/input/Checkbox";
 import Button from "../ui/button/Button";
 import { BASE_URL } from "../../utils/constants";
-import { AuthContext } from "../../context/AuthContext";
+import { useAuth } from "../../context/AuthContext";
 
 /**
  * SignInForm
@@ -23,7 +23,7 @@ import { AuthContext } from "../../context/AuthContext";
  */
 export default function SignInForm() {
   const navigate = useNavigate();
-  const authContext = useContext(AuthContext);
+  const { refreshUser } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -45,7 +45,7 @@ export default function SignInForm() {
 
     try {
       await axios.post(
-       BASE_URL+ "/auth/login",
+       `${BASE_URL}/auth/login`,
         {
           email,
           password,
@@ -57,9 +57,7 @@ export default function SignInForm() {
       );
      
       // ✅ FIX: Refresh user data in AuthContext immediately after login
-      if (authContext?.refreshUser) {
-        await authContext.refreshUser();
-      }
+      await refreshUser();
 
       // If login succeeds, backend cookie is set
       // Redirect to dashboard

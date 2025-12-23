@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../api/useAuth";
+import { useAuth } from "../../context/AuthContext";
 import axios from "axios";
 import { BASE_URL } from "../../utils/constants";
 import Input from "../../components/form/input/InputField";

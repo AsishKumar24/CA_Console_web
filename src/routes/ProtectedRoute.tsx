@@ -1,5 +1,5 @@
-import { Navigate, Outlet } from "react-router-dom";
-import { useAuth } from "../api/useAuth";
+import { Navigate, Outlet } from "react-router-dom"; // Trigger reload
+import { useAuth } from "../context/AuthContext";
 import { useEffect } from "react";
 
 export default function ProtectedLayout() {

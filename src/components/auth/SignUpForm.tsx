@@ -31,7 +31,7 @@ export default function SignUpForm() {
 
     try {
       await axios.post(
-        BASE_URL + "/auth/register",
+        `${BASE_URL}/auth/register`,
         {
           firstName,
           lastName,
