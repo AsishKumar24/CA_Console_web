@@ -22,10 +22,18 @@ interface Client {
 }
 
 const ASSESSMENT_YEARS = [
+  "2017-18",
+  "2018-19",
+  "2019-20",
+  "2020-21",
+  "2021-22",
+  "2022-23",
   "2023-24",
   "2024-25",
   "2025-26",
   "2026-27",
+  "2027-28",
+  "2028-29",
 ];
 
 const PERIODS = ["One Time","Monthly", "Quarterly", "Yearly"];
@@ -77,6 +85,13 @@ export default function CreateTask() {
   const [period, setPeriod] = useState("");
   const [notes, setNotes] = useState("");
 
+  // ===== Advance Payment =====
+  const [hasAdvance, setHasAdvance] = useState(false);
+  const [advanceAmount, setAdvanceAmount] = useState("");
+  const [advancePaymentMode, setAdvancePaymentMode] = useState("CASH");
+  const [advanceTransactionId, setAdvanceTransactionId] = useState("");
+  const [advanceNotes, setAdvanceNotes] = useState("");
+
   // ===== Assignment =====
   const [users, setUsers] = useState<User[]>([]);
   const [assignedTo, setAssignedTo] = useState<string | null>(null);
@@ -118,43 +133,51 @@ export default function CreateTask() {
     setTitle(autoTitle);
   }, [serviceType, subCategory, returnType, customServiceType, titleManuallyEdited]);
 
-  // ===== Fetch Assignable Users =====
+  // ===== Fetch Assignable Users (On Mount Only) =====
   useEffect(() => {
-    axios
-      .get(BASE_URL + "/auth/assignable", { withCredentials: true })
-      .then(res => setUsers(res.data.users.filter((u: User) => u.isActive !== false)))
-      .catch(() => setUsers([]));
+    const fetchUsers = () => {
+      axios
+        .get(BASE_URL + "/auth/assignable", { withCredentials: true })
+        .then(res => setUsers(res.data.users.filter((u: User) => u.isActive !== false)))
+        .catch(() => setUsers([]));
+    };
+
+    fetchUsers();
   }, []);
 
-  // ===== Search Clients =====
+  // Fetch clients based on search input OR when field is focused
   useEffect(() => {
-    if (!clientSearch || selectedClient) {
-      setClients([]);
-      setSearchLoading(false);
-      return;
-    }
-
+    if (!clientSearch && !showClientDropdown) return;
+    
+    const controller = new AbortController();
     setSearchLoading(true);
+
     const timer = setTimeout(() => {
       axios
         .get(BASE_URL + `/api/clients?search=${clientSearch}`, {
-          withCredentials: true
+          withCredentials: true,
+          signal: controller.signal
         })
         .then(res => {
           setClients(res.data.clients.filter((c: Client) => c.isActive !== false));
           setSearchLoading(false);
         })
-        .catch(() => {
-          setClients([]);
-          setSearchLoading(false);
+        .catch((err) => {
+          if (axios.isCancel(err)) {
+            console.log("Client search cancelled");
+          } else {
+            setClients([]);
+            setSearchLoading(false);
+          }
         });
     }, 400);
 
     return () => {
       clearTimeout(timer);
+      controller.abort();
       setSearchLoading(false);
     };
-  }, [clientSearch, selectedClient]);
+  }, [clientSearch, selectedClient, showClientDropdown]);
 
   // ===== Submit =====
   const handleSubmit = async (e: React.FormEvent) => {
@@ -205,6 +228,17 @@ export default function CreateTask() {
         }];
       }
 
+      // Add advance payment if provided
+      if (hasAdvance && advanceAmount && parseFloat(advanceAmount) > 0) {
+        payload.advance = {
+          isPaid: true,
+          amount: parseFloat(advanceAmount),
+          paymentMode: advancePaymentMode,
+          transactionId: advanceTransactionId.trim() || undefined,
+          notes: advanceNotes.trim() || undefined
+        };
+      }
+
       await axios.post(
         BASE_URL + "/api/tasks",
         payload,
@@ -226,6 +260,13 @@ export default function CreateTask() {
       setAssignedTo(null);
       setSelectedClient(null);
       setClientSearch("");
+      
+      // Reset advance payment fields
+      setHasAdvance(false);
+      setAdvanceAmount("");
+      setAdvancePaymentMode("CASH");
+      setAdvanceTransactionId("");
+      setAdvanceNotes("");
       
       // Auto-hide success message after 3 seconds
       setTimeout(() => setSuccess(false), 3000);
@@ -283,21 +324,6 @@ export default function CreateTask() {
           <div className="px-6 py-5 space-y-6">
             {/* Task Info */}
             <section className="space-y-4">
-              <div>
-                <Label>
-                  Task Title<span className="text-red-500 ml-1">*</span>
-                </Label>
-                <Input
-                  placeholder="e.g., GST Filing – March 2024"
-                  value={title}
-                  onChange={(e) => {
-                    setTitle(e.target.value);
-                    setTitleManuallyEdited(true);
-                  }}
-                  required
-                />
-              </div>
-
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label>Service Type</Label>
@@ -394,6 +420,22 @@ export default function CreateTask() {
                   />
                 </div>
               )}
+
+              {/* Task Title - Moved below service type for better UX */}
+              <div>
+                <Label>
+                  Task Title<span className="text-red-500 ml-1">*</span>
+                </Label>
+                <Input
+                  placeholder="e.g., GST Filing – March 2024"
+                  value={title}
+                  onChange={(e) => {
+                    setTitle(e.target.value);
+                    setTitleManuallyEdited(true);
+                  }}
+                  required
+                />
+              </div>
             </section>
             
 
@@ -540,13 +582,97 @@ export default function CreateTask() {
                 onChange={(e) => setAssignedTo(e.target.value || null)}
                 className="h-11 w-full rounded-lg border border-gray-300 dark:border-gray-700 px-4 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
-                <option value="">Self (Admin)</option>
+                <option value="">-- Select Staff Member --</option>
                 {users.map((u) => (
                   <option key={u._id} value={u._id}>
                     {u.firstName} — {u.role}
                   </option>
                 ))}
               </select>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                Leave unassigned to keep task in your queue
+              </p>
+            </section>
+
+            {/* ========== ADVANCE PAYMENT SECTION ========== */}
+            <section className="space-y-4">
+              <div 
+                className="flex items-center justify-between cursor-pointer p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-750 transition-colors"
+                onClick={() => setHasAdvance(!hasAdvance)}
+              >
+                <div className="flex items-center gap-3">
+                  <div className={`w-10 h-6 rounded-full transition-colors flex items-center ${hasAdvance ? 'bg-green-500 justify-end' : 'bg-gray-300 dark:bg-gray-600 justify-start'}`}>
+                    <div className="w-5 h-5 bg-white rounded-full shadow mx-0.5"></div>
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-900 dark:text-white">Advance Payment</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Mark if client paid in advance</p>
+                  </div>
+                </div>
+                {hasAdvance && (
+                  <span className="text-xs font-medium text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/30 px-2 py-1 rounded-full">
+                    Advance Received
+                  </span>
+                )}
+              </div>
+
+              {/* Advance Payment Details (Collapsible) */}
+              {hasAdvance && (
+                <div className="p-4 bg-green-50 dark:bg-green-900/10 border border-green-200 dark:border-green-800 rounded-lg space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label>Advance Amount (₹) <span className="text-red-500">*</span></Label>
+                      <Input
+                        type="number"
+                        placeholder="Enter amount"
+                        value={advanceAmount}
+                        onChange={(e) => setAdvanceAmount(e.target.value)}
+                        min="1"
+                        required={hasAdvance}
+                      />
+                    </div>
+                    <div>
+                      <Label>Payment Mode</Label>
+                      <select
+                        value={advancePaymentMode}
+                        onChange={(e) => setAdvancePaymentMode(e.target.value)}
+                        className="h-11 w-full rounded-lg border border-gray-300 dark:border-gray-700 px-4 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      >
+                        <option value="CASH">Cash</option>
+                        <option value="UPI">UPI</option>
+                        <option value="BANK_TRANSFER">Bank Transfer</option>
+                        <option value="CHEQUE">Cheque</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label>Transaction ID (Optional)</Label>
+                      <Input
+                        placeholder="e.g., TXN123456"
+                        value={advanceTransactionId}
+                        onChange={(e) => setAdvanceTransactionId(e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label>Notes (Optional)</Label>
+                      <Input
+                        placeholder="e.g., Cash received at office"
+                        value={advanceNotes}
+                        onChange={(e) => setAdvanceNotes(e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  <p className="text-xs text-green-700 dark:text-green-400 flex items-center gap-1">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    An advance receipt (ADV-XXXXXX) will be generated automatically
+                  </p>
+                </div>
+              )}
             </section>
 
             {/* Notes */}

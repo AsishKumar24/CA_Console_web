@@ -15,12 +15,18 @@ interface Task {
   };
   billing: {
     amount: number;
+    taxAmount?: number;
+    discount?: number;
     dueDate: string;
     paymentMode: string;
     paymentStatus: string;
     invoiceNumber: string;
     paidAmount: number;
     paidAt?: string;
+    advance?: {
+      isPaid: boolean;
+      amount: number;
+    };
   };
 }
 
@@ -53,36 +59,46 @@ export default function BillingDashboard() {
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [search, setSearch] = useState("");
 
-  const fetchBills = async () => {
+  const fetchBills = async (signal?: AbortSignal) => {
     try {
       setLoading(true);
       const res = await axios.get(`${BASE_URL}/api/billing/dashboard`, {
         params: {
           status: statusFilter !== "ALL" ? statusFilter : undefined,
+          search: search || undefined,
         },
         withCredentials: true,
+        signal
       });
       setTasks(res.data.tasks);
       setStats(res.data.stats);
     } catch (err) {
-      console.error("Failed to fetch billing dashboard", err);
+      if (axios.isCancel(err)) {
+       // console.log("Billing Dashboard fetch cancelled");
+      } else {
+        console.error("Failed to fetch billing dashboard", err);
+      }
     } finally {
-      setLoading(false);
+      if (!signal?.aborted) {
+        setLoading(false);
+      }
     }
   };
 
   useEffect(() => {
-    fetchBills();
-  }, [statusFilter]);
+    const controller = new AbortController();
+    
+    const timer = setTimeout(() => {
+      fetchBills(controller.signal);
+    }, 300);
 
-  const filteredTasks = search
-    ? tasks.filter(
-        (task) =>
-          task.title.toLowerCase().includes(search.toLowerCase()) ||
-          task.client.name.toLowerCase().includes(search.toLowerCase()) ||
-          task.billing.invoiceNumber.toLowerCase().includes(search.toLowerCase())
-      )
-    : tasks;
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
+  }, [statusFilter, search]);
+
+  const filteredTasks = tasks; // Server now returns the filtered list
 
   const statusColors = {
     UNPAID:
@@ -193,7 +209,7 @@ export default function BillingDashboard() {
               <th className="px-6 py-3 text-left">Task</th>
               <th className="px-6 py-3 text-left">Client</th>
               <th className="px-6 py-3 text-left">Amount</th>
-              <th className="px-6 py-3 text-left">Due Date</th>
+              <th className="px-6 py-3 text-left">Billing Date</th>
               <th className="px-6 py-3 text-left">Mode</th>
               <th className="px-6 py-3 text-left">Status</th>
               <th className="px-6 py-3 text-left">Actions</th>
@@ -208,18 +224,15 @@ export default function BillingDashboard() {
                 <td className="px-6 py-4">{task.client.name}</td>
 
                 <td className="px-6 py-4 font-medium">
-                  <SensitiveData
-                    value={task.billing.amount}
-                    className="inline font-medium"
-                  />
+                  {/* Total Bill */}
+                  <span className="font-medium">
+                    ₹{((task.billing.amount || 0) + (task.billing.taxAmount || 0) - (task.billing.discount || 0)).toLocaleString("en-IN")}
+                  </span>
 
-                  {task.billing.paidAmount > 0 && (
+                  {/* Paid amount (advance + paid) */}
+                  {((task.billing.advance?.amount || 0) + (task.billing.paidAmount || 0)) > 0 && (
                     <div className="text-xs text-green-600 mt-1">
-                      Paid:{" "}
-                      <SensitiveData
-                        value={task.billing.paidAmount}
-                        className="inline"
-                      />
+                      Paid: ₹{((task.billing.advance?.amount || 0) + (task.billing.paidAmount || 0)).toLocaleString("en-IN")}
                     </div>
                   )}
                 </td>

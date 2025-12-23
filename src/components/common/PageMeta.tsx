@@ -8,7 +8,7 @@ const PageMeta = ({
   description: string;
 }) => (
   <Helmet>
-    <title>AndroBlight : Malware Detector</title>
+    <title>CA CONSOLE</title>
     <meta name="description" content={description} />
   </Helmet>
 );

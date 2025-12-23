@@ -46,11 +46,28 @@ export default function Home() {
   const authContext = useContext(AuthContext);
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
-  const [recentActivities] = useState<RecentActivity[]>([
-    { type: "task", description: "New task assigned", time: "2 mins ago", icon: "📋" },
-    { type: "payment", description: "Payment received", time: "15 mins ago", icon: "💰" },
-    { type: "client", description: "New client added", time: "1 hour ago", icon: "👤" },
-  ]);
+  const [recentActivities, setRecentActivities] = useState<RecentActivity[]>([]);
+
+  // Simple relative time formatter
+  const formatTime = (dateStr: string) => {
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+    
+    if (diffInSeconds < 0) return "Just now";
+    if (diffInSeconds < 60) return `${diffInSeconds}s ago`;
+    
+    const diffInMinutes = Math.floor(diffInSeconds / 60);
+    if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
+    
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    if (diffInHours < 24) return `${diffInHours}h ago`;
+    
+    const diffInDays = Math.floor(diffInHours / 24);
+    if (diffInDays < 7) return `${diffInDays}d ago`;
+    
+    return date.toLocaleDateString("en-IN", { day: 'numeric', month: 'short' });
+  };
 
   // Get user role from AuthContext
   const isAdmin = authContext?.user?.role === "ADMIN";
@@ -58,11 +75,28 @@ export default function Home() {
   useEffect(() => {
     if (isAdmin) {
       fetchDashboardStats();
+      fetchRecentActivities();
     } else if (authContext?.user) {
       // If user is loaded but not admin, stop loading so we can show StaffDashboard
       setLoading(false);
     }
   }, [isAdmin, authContext?.user]);
+
+  const fetchRecentActivities = async () => {
+    try {
+      const res = await axios.get(`${BASE_URL}/api/dashboard/activities`, {
+        withCredentials: true,
+      });
+      setRecentActivities(res.data.activities);
+    } catch (err) {
+      console.error("Failed to fetch recent activities", err);
+    }
+  };
+
+  const handleRefresh = () => {
+    fetchDashboardStats();
+    fetchRecentActivities();
+  };
 
   const fetchDashboardStats = async () => {
     try {
@@ -99,25 +133,7 @@ export default function Home() {
   const taskCompletionRate = Math.round((stats.tasks.completed / stats.tasks.total) * 100);
   const paymentCollectionRate = Math.round((stats.billing.paidAmount / stats.billing.totalAmount) * 100);
 
-  // Smart currency formatter
-  const formatCurrency = (amount: number): string => {
-    if (amount === 0) return "₹0";
-    
-    // Crores (10,000,000+)
-    if (amount >= 10000000) {
-      return `₹${(amount / 10000000).toFixed(2)}Cr`;
-    }
-    // Lakhs (100,000+)
-    if (amount >= 100000) {
-      return `₹${(amount / 100000).toFixed(2)}L`;
-    }
-    // Thousands (1,000+)
-    if (amount >= 1000) {
-      return `₹${(amount / 1000).toFixed(2)}K`;
-    }
-    // Less than 1000
-    return `₹${amount.toLocaleString()}`;
-  };
+
 
   return (
     <div className="p-6 space-y-6">
@@ -133,7 +149,7 @@ export default function Home() {
         </div>
         <div className="flex items-center gap-3">
           <button
-            onClick={fetchDashboardStats}
+            onClick={handleRefresh}
             className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm transition-colors flex items-center gap-2"
           >
             <span className={loading ? "animate-spin" : ""}>🔄</span>
@@ -200,13 +216,13 @@ export default function Home() {
             </div>
             <span className="text-sm bg-white/20 px-2 py-1 rounded-full">{paymentCollectionRate}%</span>
           </div>
-         <h3 className="text-3xl font-bold mb-1">
-  <SensitiveData value={stats.billing.paidAmount} className="inline text-white" />
-</h3>
+          <h3 className="text-3xl font-bold mb-1">
+            <SensitiveData value={stats.billing.paidAmount} className="inline text-white" />
+          </h3>
           <p className="text-purple-100 text-sm">Revenue Collected</p>
           <div className="mt-3 text-xs">
-  <SensitiveData value={stats.billing.pendingAmount} className="inline text-white" /> pending
-</div>
+            <SensitiveData value={stats.billing.pendingAmount} className="inline text-white" /> pending
+          </div>
         </div>
 
         {/* Urgent Items */}
@@ -349,17 +365,23 @@ export default function Home() {
         <div className="lg:col-span-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-6">
           <h3 className="font-semibold text-gray-900 dark:text-white mb-4">Recent Activity</h3>
           <div className="space-y-3">
-            {recentActivities.map((activity, idx) => (
-              <div key={idx} className="flex items-center gap-3 p-3 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors">
-                <div className="w-10 h-10 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center text-lg">
-                  {activity.icon}
+            {recentActivities.length > 0 ? (
+              recentActivities.map((activity, idx) => (
+                <div key={idx} className="flex items-center gap-3 p-3 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors">
+                  <div className="w-10 h-10 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center text-lg">
+                    {activity.icon}
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-gray-900 dark:text-white">{activity.description}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">{formatTime(activity.time)}</p>
+                  </div>
                 </div>
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-gray-900 dark:text-white">{activity.description}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">{activity.time}</p>
-                </div>
+              ))
+            ) : (
+              <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                <p className="text-sm italic">No recent activity yet.</p>
               </div>
-            ))}
+            )}
           </div>
         </div>
       </div>

@@ -49,6 +49,7 @@ interface Task {
     };
     note?: string;
   }>;
+  legacyAssignedName?: string;
   isArchived: boolean;
   createdAt: string;
   updatedAt: string;
@@ -82,6 +83,7 @@ export default function TaskDetails() {
     dueDate: "",
     assessmentYear: "",
     period: "",
+    assignedTo: "",
   });
 
   // Status update
@@ -93,13 +95,10 @@ export default function TaskDetails() {
   const [noteMessage, setNoteMessage] = useState("");
   const [addingNote, setAddingNote] = useState(false);
 
-  // Assign task
+  // Users for assignment
   const [users, setUsers] = useState<User[]>([]);
-  const [assignToId, setAssignToId] = useState("");
-  const [assigning, setAssigning] = useState(false);
 
   const isAdmin = user?.role === "ADMIN";
-  const isOwner = task?.owner._id === user?.id;
   const isAssignedToMe = task?.assignedTo?._id === user?.id;
 
   const fetchTask = async () => {
@@ -167,6 +166,7 @@ export default function TaskDetails() {
       dueDate: task.dueDate || "",
       assessmentYear: task.assessmentYear || "",
       period: task.period || "",
+      assignedTo: task.assignedTo?._id || "",
     });
     setIsEditing(true);
   };
@@ -263,24 +263,7 @@ export default function TaskDetails() {
     }
   };
 
-  // Handle Assign
-  const handleAssign = async () => {
-    if (!assignToId) return;
-
-    try {
-      setAssigning(true);
-      await axios.patch(
-        `${BASE_URL}/api/tasks/${taskId}/assign`,
-        { staffId: assignToId },
-        { withCredentials: true }
-      );
-      fetchTask();
-    } catch (err: any) {
-      setError(err?.response?.data?.error || "Failed to assign task");
-    } finally {
-      setAssigning(false);
-    }
-  };
+  // Handle Archive/Restore
 
   // Handle Archive/Restore
   const handleArchive = async () => {
@@ -306,6 +289,44 @@ export default function TaskDetails() {
       fetchTask();
     } catch (err: any) {
       setError(err?.response?.data?.error || "Failed to restore task");
+    }
+  };
+
+  // Handle Permanent Delete
+  const handlePermanentDelete = async () => {
+    // Multi-step confirmation for safety
+    const firstConfirm = window.confirm(
+      `⚠️ PERMANENT DELETION WARNING\n\n` +
+      `Task: "${task?.title}"\n\n` +
+      `This will PERMANENTLY DELETE the task from the database.\n\n` +
+      `This action CANNOT be undone.\n\n` +
+      `Are you sure you want to continue?`
+    );
+
+    if (!firstConfirm) return;
+
+    const secondConfirm = window.confirm(
+      `🚨 FINAL CONFIRMATION\n\n` +
+      `You are about to PERMANENTLY delete:\n` +
+      `"${task?.title}"\n\n` +
+      `Type-safe note: Tasks with billing records or payments cannot be deleted.\n\n` +
+      `Click OK to proceed with permanent deletion.`
+    );
+
+    if (!secondConfirm) return;
+
+    try {
+      await axios.delete(
+        `${BASE_URL}/api/tasks/${taskId}/permanent`,
+        { withCredentials: true }
+      );
+      
+      alert('✅ Task permanently deleted');
+      navigate('/tasks/list'); // Redirect to task list
+    } catch (err: any) {
+      const errorMsg = err?.response?.data?.error || "Failed to delete task";
+      alert(`❌ Deletion Failed\n\n${errorMsg}`);
+      setError(errorMsg);
     }
   };
 
@@ -342,19 +363,13 @@ export default function TaskDetails() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <button
-            onClick={() => navigate(-1)}
-            className="text-sm text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white mb-2"
-          >
-            ← Back
-          </button>
           <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
         Task Details
       </h1>
         </div>
 
-        {/* Admin Controls - Archive only for NOT_STARTED tasks */}
-        {isAdmin && !task.isArchived && task.status === "NOT_STARTED" && (
+        {/* Admin Controls - Archive only for NOT_STARTED or COMPLETED tasks */}
+        {isAdmin && !task.isArchived && (task.status === "NOT_STARTED" || task.status === "COMPLETED") && (
           <div className="flex gap-2">
             {!isEditing && (
               <Button variant="outline" size="sm" onClick={startEdit}>
@@ -365,10 +380,22 @@ export default function TaskDetails() {
               variant="outline"
               size="sm"
               onClick={handleArchive}
-              className="text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20"
+              className="text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-950/20"
             >
               📦 Archive
             </Button>
+            
+            {/* Permanent Delete - Only for NOT_STARTED tasks */}
+            {task.status === "NOT_STARTED" && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handlePermanentDelete}
+                className="text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20"
+              >
+                🗑️ Delete Permanently
+              </Button>
+            )}
           </div>
         )}
 
@@ -505,6 +532,27 @@ export default function TaskDetails() {
                   />
                 </div>
 
+                {/* REASSIGNMENT: Moving it here from sidebar, but blocking for COMPLETED tasks */}
+                {task.status !== "COMPLETED" && (
+                  <div>
+                    <Label>Assign To</Label>
+                    <select
+                      value={editData.assignedTo}
+                      onChange={(e) =>
+                        setEditData({ ...editData, assignedTo: e.target.value })
+                      }
+                      className="h-11 w-full rounded-lg border border-gray-300 dark:border-gray-700 px-4 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                    >
+                      <option value="">Unassigned</option>
+                      {users.map((u) => (
+                        <option key={u._id} value={u._id}>
+                          {u.firstName} ({u.role})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
                 <div className="flex gap-2">
                   <Button onClick={handleEditSubmit}>Save Changes</Button>
                   <Button variant="outline" onClick={() => setIsEditing(false)}>
@@ -600,19 +648,21 @@ export default function TaskDetails() {
             </h3>
             <div>
               <p className="font-medium text-gray-900 dark:text-white">
-                {task.client.name}
+                {task.client?.name || "Deleted Client"}
               </p>
-              {task.client.code && (
+              {task.client?.code && (
                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                   Code: {task.client.code}
                 </p>
               )}
-              <button
-                onClick={() => navigate(`/clients/${task.client._id}`)}
-                className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 mt-2"
-              >
-                View Client Details →
-              </button>
+              {task.client?._id && (
+                <button
+                  onClick={() => navigate(`/clients/${task.client?._id}`)}
+                  className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 mt-2"
+                >
+                  View Client Details →
+                </button>
+              )}
             </div>
           </div>
 
@@ -694,7 +744,7 @@ export default function TaskDetails() {
                       {note.message}
                     </p>
                     <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                      {note.createdBy.firstName} • {formatDate(note.createdAt)}
+                      {note.createdBy?.firstName || "Unknown User"} • {formatDate(note.createdAt)}
                     </p>
                   </div>
                 ))
@@ -706,8 +756,8 @@ export default function TaskDetails() {
         {/* Sidebar */}
         <div className="space-y-6">
           {/* Assignment */}
-          {/* Assignment Section - Admin Only, Not Archived, Not Completed */}
-          {isAdmin && !task.isArchived && task.status !== "COMPLETED" && (
+          {/* Assignment Section - Keep as info block in sidebar (read-only) */}
+          {(task.assignedTo || task.legacyAssignedName) && (
             <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-5">
               <h3 className="font-semibold text-gray-900 dark:text-white mb-3">
                 👤 Assignment
@@ -724,51 +774,34 @@ export default function TaskDetails() {
                     {task.assignedTo.email}
                   </p>
                 </div>
+              ) : task.legacyAssignedName ? (
+                /* LEGACY STAFF DISPLAY */
+                <div className="mb-4 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                   <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-1">
+                    📜 Legacy History
+                  </p>
+                  <p className="font-semibold text-gray-700 dark:text-gray-300">
+                    {task.legacyAssignedName}
+                  </p>
+                  <p className="text-[10px] text-gray-400 mt-1 italic">
+                    Staff account has been deleted
+                  </p>
+                </div>
               ) : (
-                <p className="text-sm text-gray-500 dark:text-gray-400 mb-4 italic">
-                  ⚠️ Not assigned to anyone
-                </p>
+                // This case should ideally not be reached if the outer condition is (task.assignedTo || task.legacyAssignedName)
+                // but including it for completeness or if the outer condition changes.
+                <p className="text-xs text-gray-500 italic">No staff member currently assigned.</p>
               )}
-
-              <div className="space-y-3">
-                <select
-                  value={assignToId}
-                  onChange={(e) => setAssignToId(e.target.value)}
-                  className="h-11 w-full rounded-lg border border-gray-300 dark:border-gray-700 px-4 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-                >
-                  <option value="">Select staff...</option>
-                  {users.map((u) => (
-                    <option key={u._id} value={u._id}>
-                      {u.firstName} ({u.role})
-                    </option>
-                  ))}
-                </select>
-                <Button
-                  onClick={handleAssign}
-                  disabled={assigning || !assignToId}
-                  size="sm"
-                  className="w-full"
-                >
-                  {assigning ? "Assigning..." : "Assign Task"}
-                </Button>
-              </div>
             </div>
           )}
-
-          {/* Read-Only Assignment Info for Staff or Completed Tasks */}
-          {(!isAdmin || task.status === "COMPLETED" || task.isArchived) && task.assignedTo && (
+          
+          {/* If no one is assigned, show a status badge instead of empty sidebar */}
+          {!task.assignedTo && !task.legacyAssignedName && (
             <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-5">
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-3">
-                👤 Assigned To
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
+                👤 Assignment
               </h3>
-              <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                <p className="font-medium text-gray-900 dark:text-white">
-                  {task.assignedTo.firstName}
-                </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                  {task.assignedTo.email}
-                </p>
-              </div>
+              <p className="text-xs text-gray-500 italic">No staff member currently assigned.</p>
             </div>
           )}
 
@@ -792,7 +825,7 @@ export default function TaskDetails() {
                     </p>
                   )}
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                    {history.changedBy.firstName} •{" "}
+                    {history.changedBy?.firstName || "Unknown User"} •{" "}
                     {formatDate(history.changedAt)}
                   </p>
                 </div>
@@ -809,7 +842,7 @@ export default function TaskDetails() {
               <div>
                 <p className="text-gray-500 dark:text-gray-400">Created By</p>
                 <p className="text-gray-900 dark:text-white font-medium">
-                  {task.owner.firstName}
+                  {task.owner?.firstName || "System"}
                 </p>
               </div>
               <div>

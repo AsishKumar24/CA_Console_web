@@ -60,7 +60,7 @@ export default function AllTasks() {
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
 
-  const fetchTasks = async () => {
+  const fetchTasks = async (signal?: AbortSignal) => {
     try {
       setLoading(true);
       const res = await axios.get(`${BASE_URL}/api/tasks`, {
@@ -69,17 +69,25 @@ export default function AllTasks() {
           limit,
           status: statusFilter || undefined,
           assignedTo: assignedToFilter || undefined,
+          search: search || undefined,
         },
-        withCredentials: true
+        withCredentials: true,
+        signal
       });
 
       setTasks(res.data.tasks);
       setTotalPages(res.data.pagination.totalPages);
       setTotal(res.data.pagination.total);
     } catch (err) {
-      console.error("Failed to fetch tasks", err);
+      if (axios.isCancel(err)) {
+        console.log("Task fetch cancelled");
+      } else {
+        console.error("Failed to fetch tasks", err);
+      }
     } finally {
-      setLoading(false);
+      if (!signal?.aborted) {
+        setLoading(false);
+      }
     }
   };
 
@@ -95,8 +103,17 @@ export default function AllTasks() {
   };
 
   useEffect(() => {
-    fetchTasks();
-  }, [page, statusFilter, assignedToFilter]);
+    const controller = new AbortController();
+    
+    const timer = setTimeout(() => {
+      fetchTasks(controller.signal);
+    }, 300);
+
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
+  }, [page, statusFilter, assignedToFilter, search]);
 
   useEffect(() => {
     fetchUsers();
@@ -111,15 +128,7 @@ export default function AllTasks() {
     });
   };
 
-  // Local search filter
-  const filteredTasks = search
-    ? tasks.filter(
-        (task) =>
-          task.title.toLowerCase().includes(search.toLowerCase()) ||
-          task.client.name.toLowerCase().includes(search.toLowerCase()) ||
-          task.client.code?.toLowerCase().includes(search.toLowerCase())
-      )
-    : tasks;
+  const filteredTasks = tasks; // Server now returns the filtered list
 
   return (
     <div className="p-6 space-y-6">
@@ -314,7 +323,7 @@ export default function AllTasks() {
                         >
                           View
                         </button>
-                        {task.status === "NOT_STARTED" && (
+                        {(task.status === "NOT_STARTED" || task.status === "COMPLETED") && (
                           <button
                             onClick={async () => {
                               if (!window.confirm(`Archive task: ${task.title}?`)) return;

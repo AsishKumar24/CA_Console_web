@@ -1,21 +1,15 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ScrollToTop } from "./components/common/ScrollToTop";
 
 import AppLayout from "./layout/AppLayout";
 
 // Pages
 import Home from "./pages/Dashboard/Home";
-import Metrics from "./pages/Tables/Metrics";
-import UserProfiles from "./pages/UserProfiles";
-import Calendar from "./pages/Calendar";
-import Blank from "./pages/Blank";
-import LineChart from "./pages/Charts/LineChart";
-import ReportViewer from "./components/otherspg/ReportViewer";
-import PhotoGallery from "./components/otherspg/PhotoGallery";
-
 // Auth pages
 import SignIn from "./pages/AuthPages/SignIn";
 import SignUp from "./pages/AuthPages/SignUp";
+import ForgotPassword from "./pages/AuthPages/ForgotPassword";
+import ResetPassword from "./pages/AuthPages/ResetPassword";
 import NotFound from "./pages/OtherPage/NotFound";
 
 // Route guards
@@ -31,6 +25,8 @@ import MyTasks from "./pages/tasks/MyTasks";
 import AdminTaskBoard from "./pages/tasks/AdminTaskBoard";
 import AllTasks from "./pages/tasks/AllTasks";
 import ArchivedTasks from "./pages/tasks/ArchivedTasks";
+import InactiveCleanup from "./pages/management/InactiveCleanup";
+import InactiveStaffTasks from "./pages/management/InactiveStaffTasks";
 import PaymentSettings from "./pages/billing/PaymentSettings";
 import TaskBilling from "./pages/billing/TaskBilling";
 import BillingDashboard from "./pages/billing/BillingDashboard";
@@ -45,22 +41,18 @@ export default function App() {
       <Routes>
         {/* ========== PUBLIC (ONLY SIGNIN) ========== */}
         <Route path="/signin" element={<SignIn />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
 
         {/* 🔐 Auth protected */}
         <Route element={<ProtectedRoute />}>
           {/* 🧱 Persistent layout */}
           <Route element={<AppLayout />}>
             <Route index path="/" element={<Home />} />
-            <Route path="/metrics" element={<Metrics />} />
            <Route path="/profile" element={
  
-    <ProfilePage />
+     <ProfilePage />
  } />
-            <Route path="/calendar" element={<Calendar />} />
-            <Route path="/blank" element={<Blank />} />
-            <Route path="/documents" element={<ReportViewer />} />
-            <Route path="/snippets" element={<PhotoGallery />} />
-            <Route path="/line-chart" element={<LineChart />} />
 
             {/* Staff & Admin: My Tasks and Task Details */}
             <Route path="/my-tasks" element={<MyTasks />} />
@@ -89,6 +81,8 @@ export default function App() {
 
               {/* Overdue Items */}
               <Route path="/dashboard/overdue" element={<OverdueItems />} />
+              <Route path="/management/cleanup" element={<InactiveCleanup />} />
+              <Route path="/management/staff-tasks" element={<InactiveStaffTasks />} />
             </Route>
           </Route>
         </Route>

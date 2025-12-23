@@ -31,7 +31,7 @@ function AuthProvider({ children }: { children: ReactNode }) {
         withCredentials: true,
       });
 
-      console.log("ME response:", res.data);
+      // console.log("ME response:", res.data);
       setUser(res.data);
     } catch (err) {
       console.error("ME error:", err);

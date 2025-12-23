@@ -13,9 +13,19 @@ interface QRCode {
   isActive: boolean;
 }
 
+interface Letterhead {
+  _id: string;
+  firmName: string;
+  firmSubtitle?: string;
+  proprietorName?: string;
+  designation?: string;
+  isDefault?: boolean;
+}
+
 interface PaymentSettings {
   _id: string;
   qrCodes: QRCode[];
+  letterheads: Letterhead[];
 }
 
 export default function PaymentSettings() {
@@ -33,6 +43,20 @@ export default function PaymentSettings() {
   const [qrFile, setQrFile] = useState<File | null>(null);
   const [qrPreview, setQrPreview] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Letterhead form
+  const [showLetterheadForm, setShowLetterheadForm] = useState(false);
+  const [lhFirmName, setLhFirmName] = useState("");
+  const [lhFirmSubtitle, setLhFirmSubtitle] = useState("");
+  const [lhProprietorName, setLhProprietorName] = useState("");
+  const [lhDesignation, setLhDesignation] = useState("Proprietor");
+  
+  // Edit letterhead
+  const [editingLetterhead, setEditingLetterhead] = useState<string | null>(null);
+  const [editLhFirmName, setEditLhFirmName] = useState("");
+  const [editLhFirmSubtitle, setEditLhFirmSubtitle] = useState("");
+  const [editLhProprietorName, setEditLhProprietorName] = useState("");
+  const [editLhDesignation, setEditLhDesignation] = useState("");
 
   const fetchSettings = async () => {
     try {
@@ -150,6 +174,119 @@ export default function PaymentSettings() {
       fetchSettings();
     } catch (err) {
       console.error("Failed to update QR code", err);
+    }
+  };
+
+  // Letterhead functions
+  const handleAddLetterhead = async () => {
+    if (!lhFirmName) {
+      setError("Firm name is required");
+      return;
+    }
+
+    try {
+      setError("");
+      setSaving(true);
+
+      await axios.post(
+        `${BASE_URL}/api/billing/settings/letterhead`,
+        {
+          firmName: lhFirmName,
+          firmSubtitle: lhFirmSubtitle,
+          proprietorName: lhProprietorName,
+          designation: lhDesignation || "Proprietor",
+        },
+        { withCredentials: true }
+      );
+
+      // Reset form
+      setLhFirmName("");
+      setLhFirmSubtitle("");
+      setLhProprietorName("");
+      setLhDesignation("Proprietor");
+      setShowLetterheadForm(false);
+      setSuccess("Letterhead added successfully!");
+      fetchSettings();
+      setTimeout(() => setSuccess(""), 3000);
+    } catch (err: any) {
+      console.error("Failed to add letterhead", err);
+      setError(err?.response?.data?.error || "Failed to add letterhead");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDeleteLetterhead = async (lhId: string) => {
+    if (!window.confirm("Delete this letterhead?")) return;
+
+    try {
+      await axios.delete(`${BASE_URL}/api/billing/settings/letterhead/${lhId}`, {
+        withCredentials: true,
+      });
+      fetchSettings();
+    } catch (err) {
+      console.error("Failed to delete letterhead", err);
+      alert("Failed to delete letterhead");
+    }
+  };
+
+  const handleSetDefaultLetterhead = async (lhId: string) => {
+    try {
+      setSaving(true);
+      await axios.patch(
+        `${BASE_URL}/api/billing/settings/letterhead/${lhId}/default`,
+        {},
+        { withCredentials: true }
+      );
+      setSuccess("Default letterhead updated!");
+      fetchSettings();
+      setTimeout(() => setSuccess(""), 3000);
+    } catch (err: any) {
+      console.error("Failed to set default letterhead", err);
+      setError("Failed to set default letterhead");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const startEditLetterhead = (lh: Letterhead) => {
+    setEditingLetterhead(lh._id);
+    setEditLhFirmName(lh.firmName);
+    setEditLhFirmSubtitle(lh.firmSubtitle || "");
+    setEditLhProprietorName(lh.proprietorName || "");
+    setEditLhDesignation(lh.designation || "Proprietor");
+  };
+
+  const handleUpdateLetterhead = async (lhId: string) => {
+    if (!editLhFirmName) {
+      setError("Firm name is required");
+      return;
+    }
+
+    try {
+      setError("");
+      setSaving(true);
+
+      await axios.patch(
+        `${BASE_URL}/api/billing/settings/letterhead/${lhId}`,
+        {
+          firmName: editLhFirmName,
+          firmSubtitle: editLhFirmSubtitle,
+          proprietorName: editLhProprietorName,
+          designation: editLhDesignation,
+        },
+        { withCredentials: true }
+      );
+
+      setEditingLetterhead(null);
+      setSuccess("Letterhead updated successfully!");
+      fetchSettings();
+      setTimeout(() => setSuccess(""), 3000);
+    } catch (err: any) {
+      console.error("Failed to update letterhead", err);
+      setError(err?.response?.data?.error || "Failed to update letterhead");
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -341,16 +478,193 @@ export default function PaymentSettings() {
         )}
       </div>
 
+      {/* Letterhead / Firm Management */}
+      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-6">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+              Invoice Letterheads ({settings?.letterheads?.length || 0})
+            </h2>
+            <p className="text-sm text-gray-500">Firm names that appear on your invoices</p>
+          </div>
+          <Button onClick={() => setShowLetterheadForm(!showLetterheadForm)}>
+            {showLetterheadForm ? "Cancel" : "+ Add Firm"}
+          </Button>
+        </div>
+
+        {/* Add Letterhead Form */}
+        {showLetterheadForm && (
+          <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 mb-4 bg-gray-50 dark:bg-gray-800">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <Label>Firm Name <span className="text-red-500">*</span></Label>
+                <Input
+                  placeholder="e.g., CA Ravi Kengua & Co."
+                  value={lhFirmName}
+                  onChange={(e) => setLhFirmName(e.target.value)}
+                />
+              </div>
+              <div>
+                <Label>Firm Subtitle</Label>
+                <Input
+                  placeholder="e.g., Chartered Accountant"
+                  value={lhFirmSubtitle}
+                  onChange={(e) => setLhFirmSubtitle(e.target.value)}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Proprietor Name</Label>
+                  <Input
+                    placeholder="e.g., CA K RAVI"
+                    value={lhProprietorName}
+                    onChange={(e) => setLhProprietorName(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Label>Designation</Label>
+                  <Input
+                    placeholder="e.g., Proprietor"
+                    value={lhDesignation}
+                    onChange={(e) => setLhDesignation(e.target.value)}
+                  />
+                </div>
+              </div>
+            </div>
+            <Button onClick={handleAddLetterhead} disabled={saving || !lhFirmName} className="mt-4">
+              {saving ? "Saving..." : "Save Letterhead"}
+            </Button>
+          </div>
+        )}
+
+        {/* Letterhead List */}
+        {!settings?.letterheads || settings.letterheads.length === 0 ? (
+          <div className="text-center py-8">
+            <div className="text-3xl mb-2">🏢</div>
+            <p className="text-gray-500 dark:text-gray-400 mb-3">
+              No letterheads added yet
+            </p>
+            <p className="text-sm text-gray-400">
+              Add your firm names that will appear on invoices
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {settings.letterheads.map((lh) => (
+              <div
+                key={lh._id}
+                className="border border-gray-200 dark:border-gray-700 rounded-lg p-4"
+              >
+                {editingLetterhead === lh._id ? (
+                  // Edit Mode
+                  <div className="space-y-3">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                      <div>
+                        <Label>Firm Name *</Label>
+                        <Input
+                          value={editLhFirmName}
+                          onChange={(e) => setEditLhFirmName(e.target.value)}
+                        />
+                      </div>
+                      <div>
+                        <Label>Firm Subtitle</Label>
+                        <Input
+                          value={editLhFirmSubtitle}
+                          onChange={(e) => setEditLhFirmSubtitle(e.target.value)}
+                        />
+                      </div>
+                      <div>
+                        <Label>Proprietor Name</Label>
+                        <Input
+                          value={editLhProprietorName}
+                          onChange={(e) => setEditLhProprietorName(e.target.value)}
+                        />
+                      </div>
+                      <div>
+                        <Label>Designation</Label>
+                        <Input
+                          value={editLhDesignation}
+                          onChange={(e) => setEditLhDesignation(e.target.value)}
+                        />
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleUpdateLetterhead(lh._id)}
+                        disabled={saving}
+                        className="text-xs px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                      >
+                        {saving ? "Saving..." : "Save"}
+                      </button>
+                      <button
+                        onClick={() => setEditingLetterhead(null)}
+                        className="text-xs px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  // View Mode
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-semibold text-gray-900 dark:text-white">
+                        {lh.firmName}
+                      </p>
+                      {lh.firmSubtitle && (
+                        <p className="text-xs text-gray-500 italic">
+                          {lh.firmSubtitle}
+                        </p>
+                      )}
+                      {lh.proprietorName && (
+                        <p className="text-sm text-gray-500">
+                          {lh.designation || 'Proprietor'} {lh.proprietorName}
+                        </p>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {lh.isDefault ? (
+                        <span className="px-2 py-1 text-xs bg-blue-100 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300 rounded-full">
+                          Default
+                        </span>
+                      ) : (
+                        <button
+                          onClick={() => handleSetDefaultLetterhead(lh._id)}
+                          className="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
+                        >
+                          Make Default
+                        </button>
+                      )}
+                      <button
+                        onClick={() => startEditLetterhead(lh)}
+                        className="text-xs px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDeleteLetterhead(lh._id)}
+                        className="text-xs px-3 py-2 border border-red-300 dark:border-red-800 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/20 text-red-600 dark:text-red-400"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
       {/* Info Box */}
       <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4">
         <h4 className="font-semibold text-blue-900 dark:text-blue-300 mb-2">
-          💡 How to use QR Codes
+          💡 How to use
         </h4>
         <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-1">
-          <li>• Upload QR codes for different UPI accounts</li>
-          <li>• When issuing a bill, select which QR code to use</li>
-          <li>• QR code will be shown to the client for payment</li>
-          <li>• Deactivate QR codes you no longer want to use</li>
+          <li>• <strong>QR Codes:</strong> Upload QR codes for UPI payments</li>
+          <li>• <strong>Letterheads:</strong> Add firm names that appear on invoice headers</li>
+          <li>• When issuing a bill, select the letterhead and QR code to use</li>
         </ul>
       </div>
     </div>

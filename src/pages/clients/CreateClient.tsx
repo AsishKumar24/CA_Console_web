@@ -35,6 +35,21 @@ export default function CreateClient() {
   const [address, setAddress] = useState("");
   const [notes, setNotes] = useState("");
 
+  // Auto-generate code prefix when name changes
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newName = e.target.value;
+    setName(newName);
+    
+    // Auto-generate code prefix from first letter
+    if (newName.trim()) {
+      const firstLetter = newName.trim()[0].toUpperCase();
+      // Only set prefix if code is empty or still has the old prefix pattern
+      if (!code || /^[A-Z]-\d*$/.test(code)) {
+        setCode(`${firstLetter}-`);
+      }
+    }
+  };
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -126,7 +141,7 @@ export default function CreateClient() {
                     </Label>
                     <Input
                       value={name}
-                      onChange={(e) => setName(e.target.value)}
+                      onChange={handleNameChange}
                       placeholder="e.g., ABC Enterprises"
                       required
                     />
@@ -137,8 +152,11 @@ export default function CreateClient() {
                     <Input
                       value={code}
                       onChange={(e) => setCode(e.target.value.toUpperCase())}
-                      placeholder="e.g., ABC001"
+                      placeholder="e.g., A-1"
                     />
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      Auto-generated from name. Add number after hyphen.
+                    </p>
                   </div>
                 </div>
               </section>

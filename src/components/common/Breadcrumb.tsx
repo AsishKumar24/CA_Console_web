@@ -103,12 +103,13 @@ export function Breadcrumb() {
         pattern: /^\/tasks\/[a-f0-9]{24}$/,
         breadcrumbs: () => [
           { label: 'Home', path: '/' },
-          { label: 'Tasks', path: '/tasks/list' },
+          { label: 'Task Console', path: user?.role === 'ADMIN' ? '/tasks/list' : '/my-tasks' },
           { label: 'Task Details' }
         ],
         context: {
           title: 'Task Details',
           subtitle: 'View and manage task information',
+          badge: { text: 'Details', color: 'blue' }
         }
       },
       
@@ -120,9 +121,9 @@ export function Breadcrumb() {
           { label: 'Clients' }
         ],
         context: {
-          title: 'Client List',
-          subtitle: 'View and manage clients',
-          badge: { text: 'Admin', color: 'green' }
+          title: 'Client Database',
+          subtitle: 'Manage and track all firm clients',
+          badge: { text: 'Records', color: 'green' }
         }
       },
       {
@@ -227,6 +228,47 @@ export function Breadcrumb() {
           subtitle: 'Add a staff member to the system',
         }
       },
+
+      // Overdue Items
+      {
+        pattern: /^\/dashboard\/overdue$/,
+        breadcrumbs: () => [
+          { label: 'Home', path: '/' },
+          { label: 'Overdue Items' }
+        ],
+        context: {
+          title: 'Overdue Monitoring',
+          subtitle: 'Track tasks that have passed their deadline',
+          badge: { text: 'Critical', color: 'red' }
+        }
+      },
+
+      // Cleanup Console
+      {
+        pattern: /^\/management\/cleanup$/,
+        breadcrumbs: () => [
+          { label: 'Home', path: '/' },
+          { label: 'Cleanup Console' }
+        ],
+        context: {
+          title: 'Cleanup Console',
+          subtitle: 'Manage and delete inactive entities',
+          badge: { text: 'Admin', color: 'red' }
+        }
+      },
+      {
+        pattern: /^\/management\/staff-tasks$/,
+        breadcrumbs: () => [
+          { label: 'Home', path: '/' },
+          { label: 'Cleanup Console', path: '/management/cleanup' },
+          { label: 'Staff Tasks' }
+        ],
+        context: {
+          title: 'Inactive Staff Tasks',
+          subtitle: 'Viewing work history for deactivated staff',
+          badge: { text: 'Audit', color: 'red' }
+        }
+      },
     ];
 
     // Find matching route
@@ -247,6 +289,7 @@ export function Breadcrumb() {
     purple: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300',
     green: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300',
     yellow: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300',
+    red: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300',
   };
 
   return (

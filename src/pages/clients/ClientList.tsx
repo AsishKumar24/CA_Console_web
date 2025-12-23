@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState, useContext, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { BASE_URL } from "../../utils/constants";
@@ -25,47 +25,70 @@ export default function ClientList() {
   const [clients, setClients] = useState<Client[]>([]);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | "active" | "inactive">("all");
+  const [letterFilter, setLetterFilter] = useState<string>("");
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal] = useState(0);
+  const [activeCount, setActiveCount] = useState(0);
+  const [inactiveCount, setInactiveCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState<string | null>(null);
 
-  const fetchClients = async () => {
+  const fetchClients = useCallback(async (signal?: AbortSignal) => {
     try {
       setLoading(true);
-      // Use different endpoint based on role
-      const endpoint = isAdmin ? `${BASE_URL}/api/clients` : `${BASE_URL}/api/clients/staff`;
       
-      const res = await axios.get(endpoint, {
-        params: isAdmin ? { 
+      const res = await axios.get(`${BASE_URL}/api/clients`, {
+        params: { 
           page, 
           limit, 
           search,
-          statusFilter
-        } : undefined, // Staff endpoint doesn't support pagination yet
-        withCredentials: true
+          statusFilter,
+          letter: letterFilter
+        },
+        withCredentials: true,
+        signal 
       });
 
       setClients(res.data.clients);
       setTotalPages(res.data.pagination.totalPages);
       setTotal(res.data.pagination.total);
-    } catch (err) {
-      console.error("Failed to fetch clients", err);
+      
+      // Use backend counts instead of counting current page
+      if (res.data.counts) {
+        setActiveCount(res.data.counts.active);
+        setInactiveCount(res.data.counts.inactive);
+      }
+    } catch (err: any) {
+      if (axios.isCancel(err)) {
+        console.log("Request cancelled successfully");
+      } else {
+        console.error("Failed to fetch clients", err);
+      }
     } finally {
-      setLoading(false);
+      // Only stop loading if we're not waiting for another request
+      if (!signal?.aborted) {
+        setLoading(false);
+      }
     }
-  };
+  }, [isAdmin, page, limit, search, statusFilter, letterFilter]);
 
-  // Debounce search
+  // Debounce search with AbortController for cleanup
   useEffect(() => {
+    const controller = new AbortController();
+    
     const timer = setTimeout(() => {
-      fetchClients();
+      fetchClients(controller.signal);
     }, 300);
 
-    return () => clearTimeout(timer);
-  }, [page, search, statusFilter]);
+    return () => {
+      // 1. Clear the debounce timer
+      clearTimeout(timer);
+      // 2. Abort the pending API request
+      controller.abort();
+    };
+  }, [fetchClients]);
 
   const copyId = (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
@@ -99,20 +122,56 @@ export default function ClientList() {
         <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-4">
           <p className="text-sm text-gray-500 dark:text-gray-400">Total Clients</p>
           <p className="text-2xl font-semibold text-gray-900 dark:text-white mt-1">
-            {total}
+            {activeCount + inactiveCount}
           </p>
         </div>
         <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-4">
           <p className="text-sm text-gray-500 dark:text-gray-400">Active</p>
           <p className="text-2xl font-semibold text-green-600 dark:text-green-400 mt-1">
-            {clients.filter(c => c.isActive).length}
+            {activeCount}
           </p>
         </div>
         <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-4">
           <p className="text-sm text-gray-500 dark:text-gray-400">Inactive</p>
           <p className="text-2xl font-semibold text-red-600 dark:text-red-400 mt-1">
-            {clients.filter(c => !c.isActive).length}
+            {inactiveCount}
           </p>
+        </div>
+      </div>
+
+      {/* A-Z Filter */}
+      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-4">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">Filter by Name or Code</h3>
+          {letterFilter && (
+            <button
+              onClick={() => {
+                setLetterFilter("");
+                setPage(1);
+              }}
+              className="text-xs text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+            >
+              Clear Filter
+            </button>
+          )}
+        </div>
+        <div className="flex flex-wrap gap-1.5">
+          {"ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map((letter) => (
+            <button
+              key={letter}
+              onClick={() => {
+                setLetterFilter(letter === letterFilter ? "" : letter);
+                setPage(1);
+              }}
+              className={`w-8 h-8 rounded-lg text-xs font-medium transition-colors ${
+                letterFilter === letter
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
+              }`}
+            >
+              {letter}
+            </button>
+          ))}
         </div>
       </div>
 

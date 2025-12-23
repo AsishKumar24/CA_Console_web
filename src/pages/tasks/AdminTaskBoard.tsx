@@ -35,7 +35,7 @@ const PRIORITY_COLORS = {
 };
 
 // Task Card Component
-function TaskCard({ task, onArchive }: { task: Task; onArchive: (taskId: string) => void }) {
+function TaskCard({ task, onArchive: _onArchive }: { task: Task; onArchive: (taskId: string) => void }) {
   const navigate = useNavigate();
   
   const [{ isDragging }, drag] = useDrag({
@@ -57,13 +57,13 @@ function TaskCard({ task, onArchive }: { task: Task; onArchive: (taskId: string)
   return (
     <div
       ref={drag as any}
-      className={`bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4 mb-3 cursor-move hover:shadow-md transition-all ${
+      className={`bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-2.5 mb-2 cursor-move hover:shadow-md transition-all ${
         PRIORITY_COLORS[task.priority as keyof typeof PRIORITY_COLORS]
       } ${isDragging ? "opacity-50" : "opacity-100"}`}
     >
-      <div className="space-y-2">
+      <div className="space-y-1.5">
         {/* Title */}
-        <h4 className="font-medium text-gray-900 dark:text-white text-sm line-clamp-2">
+        <h4 className="font-medium text-gray-900 dark:text-white text-sm line-clamp-1">
           {task.title}
         </h4>
 
@@ -100,7 +100,7 @@ function TaskCard({ task, onArchive }: { task: Task; onArchive: (taskId: string)
         </div>
 
         {/* Actions */}
-        <div className="flex items-center gap-2 pt-2 border-t border-gray-100 dark:border-gray-800">
+        <div className="flex items-center gap-2 pt-1.5 mt-1 border-t border-gray-100 dark:border-gray-800">
           <button
             onClick={() => navigate(`/tasks/${task._id}`)}
             className="flex-1 text-xs text-blue-600 hover:text-blue-700 dark:text-blue-400 font-medium"
@@ -108,9 +108,15 @@ function TaskCard({ task, onArchive }: { task: Task; onArchive: (taskId: string)
             View Details
           </button>
           {task.status === "COMPLETED" && (
-            <span className="text-[10px] text-green-600 dark:text-green-400 px-2 py-1 bg-green-50 dark:bg-green-950/20 rounded font-medium">
-              ✓ Completed
-            </span>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                _onArchive(task._id);
+              }}
+              className="text-[10px] text-gray-500 hover:text-red-500 px-2 py-1 bg-gray-100 hover:bg-red-50 dark:bg-gray-800 dark:hover:bg-red-900/20 rounded font-medium transition-colors border border-gray-200 dark:border-gray-700 hover:border-red-200 dark:hover:border-red-800"
+            >
+              📥 Archive
+            </button>
           )}
         </div>
       </div>
@@ -149,12 +155,12 @@ function Column({
   return (
     <div
       ref={drop as any}
-      className={`flex-1 min-w-[300px] ${color} rounded-xl p-4 transition-all ${
+      className={`flex-1 min-w-[280px] ${color} rounded-xl p-3 transition-all ${
         isOver ? "ring-2 ring-blue-500" : ""
       }`}
     >
       {/* Column Header */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-3">
         <h3 className="font-semibold text-gray-900 dark:text-white">
           {title}
         </h3>
@@ -164,7 +170,7 @@ function Column({
       </div>
 
       {/* Tasks */}
-      <div className="space-y-3 min-h-[400px]">
+      <div className="space-y-2 min-h-[350px]">
         {tasks.length === 0 ? (
           <div className="text-center py-8 text-sm text-gray-400">
             Drop tasks here

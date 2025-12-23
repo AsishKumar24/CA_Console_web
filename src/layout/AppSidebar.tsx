@@ -1,14 +1,23 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import {
-  ChevronDownIcon,
-  HorizontaLDots,
-  ListIcon,
+import { 
+  CaretDown,
+  DotsThree,
+  Users,
+  UserPlus,
+  List,
   Binoculars,
-  FileArchive,
-  Client,
-  PlusClient,
-} from "../icons";
+  Archive,
+  ClipboardText,
+  Plus,
+  Kanban,
+  CurrencyInr,
+  ChartPie,
+  Gear,
+  GearSix,
+  Trash,
+  Clock
+} from "phosphor-react";
 import { useSidebar } from "../context/SidebarContext";
 import { useAuth } from "../api/useAuth";
 
@@ -43,94 +52,80 @@ export default function AppSidebar() {
   const adminNavItems: NavItem[] = [
     {
       name: "Clients",
-      icon: (
-        <Client className="size-6 fill-current text-gray-500 dark:text-gray-400" />
-      ),
+      icon: <Users size={24} weight="duotone" className="text-gray-500 dark:text-gray-400" />,
       subItems: [
         {
           name: "Create Client",
-          icon: (
-            <PlusClient className="size-6 fill-current text-gray-500 dark:text-gray-400" />
-          ),
+          icon: <UserPlus size={24} weight="duotone" className="text-gray-500 dark:text-gray-400" />,
           path: "/clients/create",
         },
         {
           name: "Client List",
           path: "/clients",
-          icon: (
-            <ListIcon className="size-6 fill-current text-gray-500 dark:text-gray-400" />
-          ),
+          icon: <List size={24} weight="duotone" className="text-gray-500 dark:text-gray-400" />,
         },
         {
           name: "Search Client",
           path: "/clients/search",
-          icon: (
-            <Binoculars className="size-6 fill-current text-gray-500 dark:text-gray-400" />
-          ),
+          icon: <Binoculars size={24} weight="duotone" className="text-gray-500 dark:text-gray-400" />,
         },
       ],
     },
     {
       name: "Tasks",
-      icon: (
-        <FileArchive className="size-6 fill-current text-gray-500 dark:text-gray-400" />
-      ),
+      icon: <ClipboardText size={24} weight="duotone" className="text-gray-500 dark:text-gray-400" />,
       subItems: [
         {
           name: "Create Task",
           path: "/tasks",
-          icon: (
-            <PlusClient className="size-6 fill-current text-gray-500 dark:text-gray-400" />
-          ),
+          icon: <Plus size={24} weight="bold" className="text-gray-500 dark:text-gray-400" />,
         },
         {
           name: "My Task Board",
           path: "/my-task-board",
-          icon: (
-            <ListIcon className="size-6 fill-current text-gray-500 dark:text-gray-400" />
-          ),
+          icon: <Kanban size={24} weight="duotone" className="text-gray-500 dark:text-gray-400" />,
         },
         {
           name: "All Tasks",
           path: "/tasks/list",
-          icon: (
-            <ListIcon className="size-6 fill-current text-gray-500 dark:text-gray-400" />
-          ),
+          icon: <List size={24} weight="duotone" className="text-gray-500 dark:text-gray-400" />,
         },
         {
           name: "Archived Tasks",
           path: "/tasks/archived",
-          icon: (
-            <FileArchive className="size-6 fill-current text-gray-500 dark:text-gray-400" />
-          ),
+          icon: <Archive size={24} weight="duotone" className="text-gray-500 dark:text-gray-400" />,
         },
       ],
     },
     {
       name: "Billing",
-      icon: (
-        <svg className="size-6 fill-current text-gray-500 dark:text-gray-400" viewBox="0 0 24 24" fill="none">
-          <path d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" strokeWidth="2"/>
-          <path d="M12 6V18M9 9H12.5C13.8807 9 15 10.1193 15 11.5C15 12.8807 13.8807 14 12.5 14H9" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-        </svg>
-      ),
+      icon: <CurrencyInr size={24} weight="duotone" className="text-gray-500 dark:text-gray-400" />,
       subItems: [
         {
           name: "Dashboard",
           path: "/billing",
-          icon: (
-            <ListIcon className="size-6 fill-current text-gray-500 dark:text-gray-400" />
-          ),
+          icon: <ChartPie size={24} weight="duotone" className="text-gray-500 dark:text-gray-400" />,
         },
         {
           name: "Payment Settings",
           path: "/billing/settings",
-          icon: (
-            <svg className="size-6 fill-current text-gray-500 dark:text-gray-400" viewBox="0 0 24 24">
-              <path d="M12 15a3 3 0 100-6 3 3 0 000 6z"/>
-              <path fillRule="evenodd" d="M13.5 3a1.5 1.5 0 01.144 2.993L13.5 6H12v2.25a.75.75 0 01-1.493.102L10.5 8.25V6h-1.5a1.5 1.5 0 01-.144-2.993L9 3h4.5zm3.563 4.573a.75.75 0 011.152-.936l1.15 1.449a3.75 3.75 0 010 4.657l-1.15 1.45a.75.75 0 01-1.152-.937l1.05-1.323a2.25 2.25 0 000-2.794l-1.05-1.323zm-10.126 0l1.05 1.323a2.25 2.25 0 000 2.794l-1.05 1.323a.75.75 0 01-1.152.937l-1.15-1.45a3.75 3.75 0 010-4.656l1.15-1.45a.75.75 0 011.152.937zM12 15.75v2.25a.75.75 0 01-1.5 0v-2.25a.75.75 0 011.5 0z" clipRule="evenodd"/>
-            </svg>
-          ),
+          icon: <Gear size={24} weight="duotone" className="text-gray-500 dark:text-gray-400" />,
+        },
+      ],
+    },
+    {
+      name: "Administrative",
+      icon: <GearSix size={24} weight="duotone" className="text-gray-500 dark:text-gray-400" />,
+      subItems: [
+        {
+          name: "Cleanup Console",
+          path: "/management/cleanup",
+          icon: <Trash size={24} weight="duotone" className="text-gray-500 dark:text-gray-400" />,
+        },
+        {
+          name: "Inactive Staff Tasks",
+          path: "/management/staff-tasks",
+          icon: <Clock size={24} weight="duotone" className="text-gray-500 dark:text-gray-400" />,
         },
       ],
     },
@@ -142,23 +137,17 @@ export default function AppSidebar() {
   const staffNavItems: NavItem[] = [
     {
       name: "My Tasks",
-      icon: (
-        <FileArchive className="size-6 fill-current text-gray-500 dark:text-gray-400" />
-      ),
+      icon: <ClipboardText size={24} weight="duotone" className="text-gray-500 dark:text-gray-400" />,
       subItems: [
         {
           name: "Assigned to Me",
           path: "/my-tasks",
-          icon: (
-            <ListIcon className="size-6 fill-current text-gray-500 dark:text-gray-400" />
-          ),
+          icon: <List size={24} weight="duotone" className="text-gray-500 dark:text-gray-400" />,
         },
         {
           name: "Archived Tasks",
           path: "/tasks/archived",
-          icon: (
-            <FileArchive className="size-6 fill-current text-gray-500 dark:text-gray-400" />
-          ),
+          icon: <Archive size={24} weight="duotone" className="text-gray-500 dark:text-gray-400" />,
         },
       ],
     },
@@ -206,16 +195,14 @@ export default function AppSidebar() {
         <Link to="/" className="group relative">
           {isExpanded || isHovered || isMobileOpen ? (
             <div className="space-y-2">
-              {/* User Name with Gradient & Gloss */}
+              {/* Personalized Console Title */}
               <div className="relative">
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent tracking-tight drop-shadow-sm">
-                  {user?.firstName ? `${user.firstName}'s` : "My"}
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent tracking-tight drop-shadow-sm line-clamp-1">
+                  {user?.firstName ? `${user.firstName}'s` : "My"} Console
                 </h1>
-                {/* Subtle shine effect */}
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               </div>
               
-              {/* Workspace Label with Decorative Line */}
               <div className="flex items-center gap-2.5">
                 <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 tracking-wide">
                   Workspace
@@ -227,30 +214,18 @@ export default function AppSidebar() {
               <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/30 dark:to-purple-950/30 border border-blue-200/30 dark:border-blue-800/30">
                 <div className="w-1.5 h-1.5 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 animate-pulse" />
                 <span className="text-[10px] font-medium text-blue-700 dark:text-blue-300 uppercase tracking-wider">
-                  {user?.role === "ADMIN" ? "Admin Console" : "Staff Portal"}
+                  {user?.role === "ADMIN" ? "Admin Mode" : "Staff Mode"}
                 </span>
               </div>
             </div>
           ) : (
-            // Compact logo with modern design
+            // Compact logo with the favicon
             <div className="relative group">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 
-                flex items-center justify-center 
-                shadow-lg shadow-blue-500/30 dark:shadow-blue-500/20
-                group-hover:shadow-2xl group-hover:shadow-blue-500/40 dark:group-hover:shadow-blue-500/30
-                transform group-hover:scale-110 
-                transition-all duration-300 ease-out
-                relative overflow-hidden">
-                {/* Animated background */}
+              <div className="w-12 h-12 rounded-2xl overflow-hidden flex items-center justify-center shadow-lg shadow-blue-500/30 dark:shadow-blue-500/20 transform group-hover:scale-110 transition-all duration-300 ease-out relative">
+                <img src="/favicon.png" alt="CA" className="w-full h-full object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                
-                {/* Initial */}
-                <span className="text-white font-bold text-xl relative z-10 drop-shadow-md">
-                  {user?.firstName?.charAt(0).toUpperCase() || "W"}
-                </span>
               </div>
               
-              {/* Active Indicator */}
               <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full border-2 border-white dark:border-gray-900 shadow-sm">
                 <div className="absolute inset-0 bg-green-400 rounded-full animate-ping opacity-75" />
               </div>
@@ -272,7 +247,7 @@ export default function AppSidebar() {
             </>
           ) : (
             <div className="w-full flex justify-center">
-              <HorizontaLDots className="text-gray-400 dark:text-gray-600 w-6 h-6" />
+              <DotsThree size={24} weight="bold" className="text-gray-400 dark:text-gray-600" />
             </div>
           )}
         </div>
@@ -311,8 +286,10 @@ export default function AppSidebar() {
                     }`}>
                       {nav.name}
                     </span>
-                    <ChevronDownIcon
-                      className={`ml-auto w-4 h-4 transition-all duration-300 ${
+                    <CaretDown
+                      size={16}
+                      weight="bold"
+                      className={`ml-auto transition-all duration-300 ${
                         openSubmenu === index
                           ? "rotate-180 text-blue-600 dark:text-blue-400"
                           : "text-gray-400 dark:text-gray-600"

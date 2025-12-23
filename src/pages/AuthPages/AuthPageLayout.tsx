@@ -1,5 +1,4 @@
 import React from "react";
-import GridShape from "../../components/common/GridShape";
 
 export default function AuthLayout({
   children,
@@ -23,11 +22,6 @@ export default function AuthLayout({
           {/* Secondary glow */}
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_70%,rgba(96,165,250,0.15),transparent_50%)]"></div>
 
-          {/* Grid overlay */}
-          <div className="absolute inset-0 opacity-[0.12] pointer-events-none">
-            <GridShape />
-          </div>
-
           {/* Subtle border on the left edge */}
           <div className="absolute top-0 left-0 w-px h-full bg-gradient-to-b from-transparent via-blue-500/20 to-transparent"></div>
 
@@ -37,7 +31,7 @@ export default function AuthLayout({
               {/* Logo with subtle animation */}
               <div className="mb-10 transform transition-transform duration-300 hover:scale-105">
                 <img
-                  src="/images/logo/ca-india-seeklogo.png"
+                  src="/ca-india-seeklogo.png"
                   alt="CA Console Logo"
                   className="h-44 w-auto drop-shadow-2xl"
                 />

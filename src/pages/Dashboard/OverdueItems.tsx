@@ -15,8 +15,10 @@ interface OverdueTask {
     code?: string;
   };
   assignedTo?: {
+    _id: string;
     firstName: string;
     lastName: string;
+    email: string;
   };
 }
 
@@ -42,6 +44,7 @@ export default function OverdueItems() {
   const [bills, setBills] = useState<OverdueBill[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"ALL" | "TASKS" | "BILLS">("ALL");
+  const [sendingReminder, setSendingReminder] = useState<string | null>(null);
 
   useEffect(() => {
     fetchOverdueItems();
@@ -59,6 +62,22 @@ export default function OverdueItems() {
       console.error("Failed to fetch overdue items", err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const sendReminder = async (taskId: string) => {
+    try {
+      setSendingReminder(taskId);
+      await axios.post(
+        `${BASE_URL}/api/tasks/${taskId}/remind`,
+        {},
+        { withCredentials: true }
+      );
+      alert("Reminder sent successfully!");
+    } catch (err: any) {
+      alert(err?.response?.data?.error || "Failed to send reminder");
+    } finally {
+      setSendingReminder(null);
     }
   };
 
@@ -207,12 +226,23 @@ export default function OverdueItems() {
                       </span>
                     </td>
                     <td className="px-6 py-4">
-                      <button
-                        onClick={() => navigate(`/tasks/${task._id}`)}
-                        className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 text-xs font-medium"
-                      >
-                        Edit Task
-                      </button>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => navigate(`/tasks/${task._id}`)}
+                          className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 text-xs font-medium"
+                        >
+                          Edit Task
+                        </button>
+                        {task.assignedTo && (
+                          <button
+                            onClick={() => sendReminder(task._id)}
+                            disabled={sendingReminder === task._id}
+                            className="px-2 py-1 bg-orange-500 hover:bg-orange-600 text-white rounded text-xs font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            {sendingReminder === task._id ? "Sending..." : "📧 Remind"}
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}

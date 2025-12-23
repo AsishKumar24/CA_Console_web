@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate, useLocation } from "react-router";
 import { useSidebar } from "../context/SidebarContext";
 import { ThemeToggleButton } from "../components/common/ThemeToggleButton";
 import UserDropdown from "../components/header/UserDropdown";
@@ -9,6 +9,8 @@ import { Breadcrumb } from "../components/common/Breadcrumb";
 const AppHeader: React.FC = () => {
   const [isApplicationMenuOpen, setApplicationMenuOpen] = useState(false);
   const { user } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const { isMobileOpen, toggleSidebar, toggleMobileSidebar } = useSidebar();
 
@@ -85,16 +87,47 @@ const AppHeader: React.FC = () => {
             </div>
           </button>
 
+          {/* New Back Button */}
+          {location.pathname !== "/" && (
+            <button
+              onClick={() => navigate(-1)}
+              className="group relative flex items-center justify-center w-11 h-11 text-gray-600 dark:text-gray-400 
+                border border-gray-200 dark:border-gray-800 rounded-xl z-99999 
+                bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900
+                hover:from-blue-50 hover:to-purple-50 dark:hover:from-blue-950/40 dark:hover:to-purple-950/40
+                hover:border-blue-200 dark:hover:border-blue-800
+                shadow-sm hover:shadow-md
+                transition-all duration-300 ease-out
+                hover:scale-105"
+              aria-label="Go Back"
+            >
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                className="group-hover:-translate-x-1 transition-transform duration-300"
+              >
+                <path
+                  d="M19 12H5M5 12L12 19M5 12L12 5"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+          )}
+
           {/* Mobile Logo */}
           <Link to="/" className="lg:hidden group">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center shadow-md">
-                <span className="text-white font-bold text-sm">
-                  {user?.firstName?.charAt(0).toUpperCase() || "W"}
-                </span>
+              <div className="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center shadow-md border border-gray-200 dark:border-gray-800">
+                <img src="/favicon.png" alt="CA" className="w-full h-full object-cover" />
               </div>
               <span className="font-bold text-gray-900 dark:text-white">
-                {user?.firstName}'s Space
+                {user?.firstName ? `${user.firstName}'s` : "My"} Console
               </span>
             </div>
           </Link>

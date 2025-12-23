@@ -6,8 +6,8 @@ export default function SignUp() {
   return (
     <>
       <PageMeta
-        title="AndroBlight : Malware detector"
-        description="This is React.js SignUp Tables Dashboard page for TailAdmin - React.js Tailwind CSS Admin Dashboard Template"
+        title="CA Console - Sign up"
+        description="Enter your email and password to sign up to your CA Console account"
       />
       <AuthLayout>
         <SignUpForm />

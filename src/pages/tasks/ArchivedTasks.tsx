@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../api/useAuth";
 import axios from "axios";
 import { BASE_URL } from "../../utils/constants";
 import Input from "../../components/form/input/InputField";
@@ -24,6 +25,7 @@ interface Task {
     _id: string;
     firstName: string;
   };
+  legacyAssignedName?: string;
   archivedAt?: string;
   createdAt: string;
 }
@@ -47,28 +49,53 @@ export default function ArchivedTasks() {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
   const [restoring, setRestoring] = useState<string | null>(null);
+  const { user } = useAuth();
 
-  const fetchArchivedTasks = async () => {
+  const fetchArchivedTasks = async (signal?: AbortSignal) => {
     try {
       setLoading(true);
+      const params: any = { 
+        archived: true,
+        search: search || undefined
+      };
+      
+      // If staff, only fetch tasks assigned to them
+      if (user?.role !== 'ADMIN') {
+        params.assignedTo = user?.id;
+      }
+
       const res = await axios.get(`${BASE_URL}/api/tasks`, {
-        params: { 
-          archived: true,
-        },
-        withCredentials: true
+        params,
+        withCredentials: true,
+        signal
       });
 
       setTasks(res.data.tasks);
     } catch (err) {
-      console.error("Failed to fetch archived tasks", err);
+      if (axios.isCancel(err)) {
+        console.log("Archived task fetch cancelled");
+      } else {
+        console.error("Failed to fetch archived tasks", err);
+      }
     } finally {
-      setLoading(false);
+      if (!signal?.aborted) {
+        setLoading(false);
+      }
     }
   };
 
   useEffect(() => {
-    fetchArchivedTasks();
-  }, []);
+    const controller = new AbortController();
+    
+    const timer = setTimeout(() => {
+      fetchArchivedTasks(controller.signal);
+    }, 300);
+
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
+  }, [search]);
 
   const handleRestore = async (taskId: string) => {
     try {
@@ -97,39 +124,29 @@ export default function ArchivedTasks() {
     });
   };
 
-  // Local search filter
-  const filteredTasks = search
-    ? tasks.filter(
-        (task) =>
-          task.title.toLowerCase().includes(search.toLowerCase()) ||
-          task.client.name.toLowerCase().includes(search.toLowerCase()) ||
-          task.client.code?.toLowerCase().includes(search.toLowerCase())
-      )
-    : tasks;
+  const filteredTasks = tasks; // Filtered by server now
 
   return (
     <div className="p-6 space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <button
-            onClick={() => navigate(-1)}
-            className="text-sm text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white mb-2"
-          >
-            ← Back
-          </button>
           <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
             Archived Tasks
           </h1>
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            View and restore archived tasks
+            {user?.role === 'ADMIN' 
+              ? "View and restore archived tasks" 
+              : "View your completed and archived tasks history"}
           </p>
         </div>
       </div>
 
       {/* Stats */}
       <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-4">
-        <p className="text-sm text-gray-500 dark:text-gray-400">Total Archived Tasks</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400">
+          {user?.role === 'ADMIN' ? "Total Archived Tasks" : "Your Archived Tasks"}
+        </p>
         <p className="text-2xl font-semibold text-gray-900 dark:text-white mt-1">
           {tasks.length}
         </p>
@@ -197,9 +214,9 @@ export default function ArchivedTasks() {
 
                     <td className="px-6 py-4">
                       <div className="text-gray-700 dark:text-gray-300">
-                        {task.client.name}
+                        {task.client?.name || "Deleted Client"}
                       </div>
-                      {task.client.code && (
+                      {task.client?.code && (
                         <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
                           {task.client.code}
                         </div>
@@ -207,7 +224,16 @@ export default function ArchivedTasks() {
                     </td>
 
                     <td className="px-6 py-4 text-gray-700 dark:text-gray-300">
-                      {task.assignedTo ? task.assignedTo.firstName : "—"}
+                      {task.assignedTo ? (
+                        task.assignedTo.firstName
+                      ) : task.legacyAssignedName ? (
+                        <span className="flex flex-col">
+                          <span>{task.legacyAssignedName}</span>
+                          <span className="text-[10px] text-gray-400 italic">(Legacy)</span>
+                        </span>
+                      ) : (
+                        "—"
+                      )}
                     </td>
 
                     <td className="px-6 py-4">
@@ -223,10 +249,10 @@ export default function ArchivedTasks() {
                     <td className="px-6 py-4">
                       <span
                         className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          STATUS_COLORS[task.status as keyof typeof STATUS_COLORS]
+                          task.status && STATUS_COLORS[task.status as keyof typeof STATUS_COLORS]
                         }`}
                       >
-                        {task.status.replace("_", " ")}
+                        {task.status?.replace("_", " ") || "UNKNOWN"}
                       </span>
                     </td>
 
@@ -242,13 +268,19 @@ export default function ArchivedTasks() {
                         >
                           View
                         </button>
-                        <button
-                          onClick={() => handleRestore(task._id)}
-                          disabled={restoring === task._id}
-                          className="text-xs text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          {restoring === task._id ? "Restoring..." : "Restore"}
-                        </button>
+                        {user?.role === 'ADMIN' ? (
+                          <button
+                            onClick={() => handleRestore(task._id)}
+                            disabled={restoring === task._id}
+                            className="text-xs text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            {restoring === task._id ? "Restoring..." : "Restore"}
+                          </button>
+                        ) : (
+                          <span className="text-[10px] text-gray-400 italic">
+                            Contact Admin to Restore
+                          </span>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -266,8 +298,14 @@ export default function ArchivedTasks() {
         </h4>
         <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-1">
           <li>• Archived tasks are hidden from the main task views</li>
-          <li>• Only admins can archive or restore tasks</li>
-          <li>• Click "Restore" to bring a task back to active status</li>
+          {user?.role === 'ADMIN' ? (
+            <>
+              <li>• You can archive or restore any task</li>
+              <li>• Click "Restore" to bring a task back to active status</li>
+            </>
+          ) : (
+            <li>• You can view tasks you've previously completed and archived</li>
+          )}
           <li>• All task data is preserved when archived</li>
         </ul>
       </div>

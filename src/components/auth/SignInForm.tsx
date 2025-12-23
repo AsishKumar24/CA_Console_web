@@ -1,6 +1,6 @@
 import { useState, useContext } from "react";
 import DeveloperFooter from "./DeveloperFooter";
-import { useNavigate } from "react-router";
+import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 
 import { EyeCloseIcon, EyeIcon } from "../../icons";
@@ -137,7 +137,7 @@ export default function SignInForm() {
                 </div>
               </div>
 
-              {/* Keep logged in (future use) */}
+              {/* Keep logged in + Forgot Password */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <Checkbox checked={isChecked} onChange={setIsChecked} />
@@ -145,6 +145,12 @@ export default function SignInForm() {
                     Keep me logged in
                   </span>
                 </div>
+                <Link
+                  to="/forgot-password"
+                  className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium"
+                >
+                  Forgot password?
+                </Link>
               </div>
 
               {/* Error */}
