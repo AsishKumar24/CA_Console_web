@@ -28,3 +28,4 @@ dist-ssr
 .cursor/rules
 unused files
 *.md
+.gemini
