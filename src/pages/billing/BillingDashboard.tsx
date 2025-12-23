@@ -217,57 +217,74 @@ export default function BillingDashboard() {
           </thead>
 
           <tbody>
-            {filteredTasks.map((task) => (
-              <tr key={task._id} className="border-t">
-                <td className="px-6 py-4">{task.billing.invoiceNumber}</td>
-                <td className="px-6 py-4">{task.title}</td>
-                <td className="px-6 py-4">{task.client.name}</td>
-
-                <td className="px-6 py-4 font-medium">
-                  {/* Total Bill */}
-                  <span className="font-medium">
-                    ₹{((task.billing.amount || 0) + (task.billing.taxAmount || 0) - (task.billing.discount || 0)).toLocaleString("en-IN")}
-                  </span>
-
-                  {/* Paid amount (advance + paid) */}
-                  {((task.billing.advance?.amount || 0) + (task.billing.paidAmount || 0)) > 0 && (
-                    <div className="text-xs text-green-600 mt-1">
-                      Paid: ₹{((task.billing.advance?.amount || 0) + (task.billing.paidAmount || 0)).toLocaleString("en-IN")}
-                    </div>
-                  )}
-                </td>
-
-                <td className="px-6 py-4">{formatDate(task.billing.dueDate)}</td>
-                <td className="px-6 py-4">
-                  {task.billing.paymentMode.replace("_", " ")}
-                </td>
-
-                <td className="px-6 py-4">
-                  <span
-                    className={`px-2 py-1 rounded-full text-xs ${
-                      statusColors[
-                        isOverdue(task)
-                          ? "OVERDUE"
-                          : (task.billing.paymentStatus as keyof typeof statusColors)
-                      ]
-                    }`}
-                  >
-                    {isOverdue(task)
-                      ? "OVERDUE"
-                      : task.billing.paymentStatus.replace("_", " ")}
-                  </span>
-                </td>
-
-                <td className="px-6 py-4">
-                  <button
-                    onClick={() => navigate(`/billing/task/${task._id}`)}
-                    className="text-blue-600 text-xs font-medium"
-                  >
-                    View Details
-                  </button>
+            {loading ? (
+              <tr>
+                <td colSpan={8} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                    <span>Loading billing records...</span>
+                  </div>
                 </td>
               </tr>
-            ))}
+            ) : filteredTasks.length === 0 ? (
+              <tr>
+                <td colSpan={8} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
+                  No billing records found.
+                </td>
+              </tr>
+            ) : (
+              filteredTasks.map((task) => (
+                <tr key={task._id} className="border-t hover:bg-gray-50/50 dark:hover:bg-gray-800/50 transition-colors">
+                  <td className="px-6 py-4">{task.billing.invoiceNumber}</td>
+                  <td className="px-6 py-4">{task.title}</td>
+                  <td className="px-6 py-4">{task.client.name}</td>
+
+                  <td className="px-6 py-4 font-medium">
+                    {/* Total Bill */}
+                    <span className="font-medium">
+                      ₹{((task.billing.amount || 0) + (task.billing.taxAmount || 0) - (task.billing.discount || 0)).toLocaleString("en-IN")}
+                    </span>
+
+                    {/* Paid amount (advance + paid) */}
+                    {((task.billing.advance?.amount || 0) + (task.billing.paidAmount || 0)) > 0 && (
+                      <div className="text-xs text-green-600 mt-1 font-normal">
+                        Paid: ₹{((task.billing.advance?.amount || 0) + (task.billing.paidAmount || 0)).toLocaleString("en-IN")}
+                      </div>
+                    )}
+                  </td>
+
+                  <td className="px-6 py-4">{formatDate(task.billing.dueDate)}</td>
+                  <td className="px-6 py-4">
+                    {task.billing.paymentMode.replace(/_/g, " ")}
+                  </td>
+
+                  <td className="px-6 py-4">
+                    <span
+                      className={`px-2 py-1 rounded-full text-[10px] font-medium uppercase tracking-wider ${
+                        statusColors[
+                          isOverdue(task)
+                            ? "OVERDUE"
+                            : (task.billing.paymentStatus as keyof typeof statusColors)
+                        ]
+                      }`}
+                    >
+                      {isOverdue(task)
+                        ? "OVERDUE"
+                        : task.billing.paymentStatus.replace(/_/g, " ")}
+                    </span>
+                  </td>
+
+                  <td className="px-6 py-4">
+                    <button
+                      onClick={() => navigate(`/billing/task/${task._id}`)}
+                      className="text-blue-600 dark:text-blue-400 text-xs font-semibold hover:underline"
+                    >
+                      View Details
+                    </button>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
