@@ -25,6 +25,5 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-.cursor/rules
 unused files
 git_ignore_files
