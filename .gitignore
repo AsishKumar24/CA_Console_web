@@ -27,5 +27,4 @@ dist-ssr
 *.sw?
 .cursor/rules
 unused files
-*.md
-.gemini
+git_ignore_files
