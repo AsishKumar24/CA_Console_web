@@ -59,6 +59,12 @@ export default function BillingDashboard() {
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [search, setSearch] = useState("");
 
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const limit = 20;
+
   const fetchBills = async (signal?: AbortSignal) => {
     try {
       setLoading(true);
@@ -66,12 +72,18 @@ export default function BillingDashboard() {
         params: {
           status: statusFilter !== "ALL" ? statusFilter : undefined,
           search: search || undefined,
+          page: currentPage,
+          limit: limit,
         },
         withCredentials: true,
         signal
       });
       setTasks(res.data.tasks);
       setStats(res.data.stats);
+      if (res.data.pagination) {
+        setTotalPages(res.data.pagination.totalPages);
+        setTotalCount(res.data.pagination.total);
+      }
     } catch (err) {
       if (axios.isCancel(err)) {
        // console.log("Billing Dashboard fetch cancelled");
@@ -96,6 +108,11 @@ export default function BillingDashboard() {
       clearTimeout(timer);
       controller.abort();
     };
+  }, [statusFilter, search, currentPage]);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
   }, [statusFilter, search]);
 
   const filteredTasks = tasks; // Server now returns the filtered list
@@ -287,6 +304,34 @@ export default function BillingDashboard() {
             )}
           </tbody>
         </table>
+
+        {/* Pagination */}
+        {!loading && totalPages > 1 && (
+          <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 dark:border-gray-800">
+            <div className="text-sm text-gray-500 dark:text-gray-400">
+              Showing {(currentPage - 1) * limit + 1} to {Math.min(currentPage * limit, totalCount)} of {totalCount} bills
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className="px-3 py-1 text-sm border border-gray-300 dark:border-gray-700 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+              >
+                Previous
+              </button>
+              <span className="text-sm text-gray-600 dark:text-gray-400">
+                Page {currentPage} of {totalPages}
+              </span>
+              <button
+                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+                className="px-3 py-1 text-sm border border-gray-300 dark:border-gray-700 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
