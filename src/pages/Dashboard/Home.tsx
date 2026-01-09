@@ -43,7 +43,7 @@ interface RecentActivity {
 
 export default function Home() {
   const navigate = useNavigate();
-  const { user, loading: authLoading } = useAuth();
+  const { user } = useAuth();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [recentActivities, setRecentActivities] = useState<RecentActivity[]>([]);
@@ -112,22 +112,28 @@ export default function Home() {
     }
   };
 
-  if (authLoading || loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-      </div>
-    );
-  }
-
   // Show staff dashboard for non-admin users
   if (!isAdmin) {
     return <StaffDashboard />;
   }
   
-  // Guard for admin stats
-  if (!stats) {
-     return <div>Error loading stats</div>;
+  // Show skeleton while loading stats
+  if (!stats || loading) {
+    return (
+      <div className="p-6 space-y-6 animate-pulse">
+        <div className="h-8 bg-gray-200 dark:bg-gray-800 rounded w-1/3"></div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="h-40 bg-gray-200 dark:bg-gray-800 rounded-xl"></div>
+          ))}
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="h-32 bg-gray-200 dark:bg-gray-800 rounded-xl"></div>
+          ))}
+        </div>
+      </div>
+    );
   }
 
   const taskCompletionRate = Math.round((stats.tasks.completed / stats.tasks.total) * 100);

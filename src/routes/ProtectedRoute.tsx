@@ -1,6 +1,7 @@
 import { Navigate, Outlet } from "react-router-dom"; // Trigger reload
 import { useAuth } from "../context/AuthContext";
 import { useEffect } from "react";
+import { LoadingScreen } from "../components/ui/LoadingScreen";
 
 export default function ProtectedLayout() {
   const { user, loading } = useAuth();
@@ -12,7 +13,7 @@ export default function ProtectedLayout() {
     }
   }, [loading, user]);
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <LoadingScreen />;
 
   if (!user) {
     console.log("User NOT authenticated, redirecting...");
